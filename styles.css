@@ -193,7 +193,7 @@ div#body {
 
 /** content+sidebar styles **/
 div#content {
-	width:675px;
+	width:800px;
 }
 div#content {
 	font-size:12px;
@@ -206,7 +206,7 @@ div.column-right {
 	float:right;
 }
 div#sidebar {
-	width:230px;
+	width:120px;
 }
 div#sidebar ul {
 	margin:0;
@@ -231,7 +231,7 @@ div#sidebar li ul li a {
 div#sidebar li ul li a:hover {
 	text-decoration:underline;
 }
-div#sidebar h4 { 
+div#sidebar h4 {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size:12px;
 	text-transform:uppercase;
@@ -324,7 +324,7 @@ div#footer-links a {
 	line-height: 0;
 	height: 0;
 }
- 
+
 .clear {
 	display: inline-block;
 }
