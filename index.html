@@ -4,6 +4,22 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>W209 - Commodities Prices</title>
 <link rel="stylesheet" type="text/css" href="styles.css" />
+<link rel="stylesheet" href="voronoi_lines.css">
+<link rel="stylesheet" href="iThing.css">
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+<script src="voronoi_lines.js"></script>
+<script src="jQAllRangeSliders-min.js"></script>
+<script src="biz_main.js"></script>
+
+<script>
+$(function() {
+	$("#dateSlider").dateRangeSlider();
+});
+</script>
+
 </head>
 <body>
 <div id="wrapper">
@@ -36,50 +52,58 @@
 					<h4>Grains</h4>
 
 					<ul>
-						<li><a href="corn.html" target="main">Corn</a></li>
-						<li><a href="oats.html" target="main">Oats</a></li>
-						<li><a href="soybeans.html" target="main">Soybeans</a></li>
-						<li><a href="wheat.html" target="main">Wheat</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Corn</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Oats</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Soybeans</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Wheat</a></li>
 					</ul>
 
 					<h4>Softs</h4>
 
 					<ul>
-						<li><a href="coffee.html" target="main">Coffee</a></li>
-						<li><a href="cotton.html" target="main">Cotton</a></li>
-						<li><a href="orange juice.html" target="main">Orange Juice</a></li>
-						<li><a href="sugar.html" target="main">Sugar</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Coffee</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Cotton</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Orange Juice</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Sugar</a></li>
 					</ul>
 
 					<h4>Energy</h4>
 
 					<ul>
-						<li><a href="crude oil.html" target="main">Crude Oil</a></li>
-						<li><a href="heating oil.html" target="main">Heating Oil</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Crude Oil</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Heating Oil</a></li>
 					</ul>
 
 					<h4>Metals</h4>
 
 					<ul>
-						<li><a href="copper.html" target="main">Copper</a></li>
-						<li><a href="gold.html" target="main">Gold</a></li>
-						<li><a href="palladium.html" target="main">Palladium</a></li>
-						<li><a href="platinum.html" target="main">Platinum</a></li>
-						<li><a href="silver.html" target="main">Silver</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Copper</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Gold</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Palladium</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Platinum</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Silver</a></li>
 					</ul>
 
 					<h4>Livestock</h4>
 
 					<ul>
-						<li><a href="feeder cattle.html" target="main">Feeder Cattle</a></li>
-						<li><a href="live hogs.html" target="main">Live Hogs</a></li>
-						<li><a href="pork bellies.html" target="main">Pork Bellies</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Feeder Cattle</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Live Hogs</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Pork Bellies</a></li>
 					</ul>
 				</li>
 			</ul>
 		</div>
 		<div id="content" class="column-right">
-			<iframe src="intro.html "name="main" frameborder=0 width=900 height=800></iframe>
+			<!--<iframe src="intro.html "name="main" frameborder=0 width=900 height=800></iframe>-->
+			<div id="dateSlider"></div>
+			<label for="price">Select a price</label>
+			<select id="price" onchange = "newPriceFunc()">
+			  <option value="close">Close</option>
+			  <option value="open">Open</option>
+			  <option value="high">High</option>
+			  <option value="low">Low</option>
+			</select>
 		</div>
 	</div>
 
@@ -99,4 +123,69 @@
 	</div>
 </div>
 </body>
+
+<script>
+////////////////////////// global variables ////////////////////////
+var svg = d3.select('#content').append("svg").attr('id', 'voronoi');
+var parseDate = d3.time.format("%m/%d/%Y").parse;
+var header = 'contract,delivery_date,trade_date,open_price,high_price,low_price,close_price,volume,interest';
+var data = {'init':null};
+var plot_data, highlight_contract, commodity;
+// file names: hard coded file name, seems javascript access of FS is tricky
+var fileName = {'canola':'canola_sorted_1980-2017.csv',
+                'cocoa':'cocoa_sorted_1970-2017.csv',
+                'corn':'corn_sorted_1960-2015.csv',
+                'coffee':'coffee_c_sorted_1973-2018.csv',
+                'copper':'copper_sorted_1959-2019.csv',
+                'cotton':'cotton_sorted_1969-2017.csv',
+                'wheat':'wheat_sorted_1959-2017.csv',
+                'soybeans':'soybeans_sorted_1960-2016.csv',
+                'oats':'oats_sorted_1960-2016.csv',
+                'orange juice':'orange_juice_sorted_1967-2017.csv',
+                'sugar':'sugar_no11_sorted_1968-2018.csv',
+							  'crude oil':'crude_oil_sorted_1983-2022.csv',
+								'heating oil':'heating_oil_sorted_1980-2018.csv',
+								'gold':'gold_sorted_1975-2019.csv',
+								'palladium':'palladium_sorted_1977-2015.csv',
+								'silver':'silver_sorted_1964-2018.csv',
+								'platinum':'platinum_sorted_1970-2015.csv',
+								'fedder cattle':'feeder_cattle_sorted_1974-2016.csv',
+								'live hogs':'lean_hogs_sorted_1970-2016.csv'};
+
+////////////////////////// global variables ////////////////////////
+
+////////////////////////// event handlers ////////////////////////
+$("#dateSlider").bind("userValuesChanged", function(){
+  console.log(timestamp() + ': new range - ' + $("#dateSlider").dateRangeSlider('min')
+    + ', ' + $("#dateSlider").dateRangeSlider('max'));
+  refreshData();
+});
+
+function clickCommodity(label) {
+	commodity = label.textContent.toLowerCase();
+	console.log(timestamp() + ': ' + commodity + ' is clicked.')
+  refreshData();
+};
+
+function newPriceFunc() {
+  if (plot_data == null || plot_data.length == 0) {
+    console.warn('No data to plot!')
+    return;
+  }
+  console.log(timestamp() + ': plot ' + $('#price').val());
+  refreshChart();
+};
+
+$('svg').on('click', function() {
+  if (highlight_contract == null || highlight_contract == "") {
+    console.log('no contract selected');
+    return;
+  }
+  console.log(highlight_contract + ' is clicked!');
+});
+////////////////////////// event handlers ////////////////////////
+
+</script>
+
+
 </html>
