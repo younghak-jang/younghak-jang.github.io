@@ -1,0 +1,46 @@
+
+body {
+  font: 12px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.x.axis text {
+  font: 10px sans-serif;
+  fill: black;
+}
+
+.x.axis line {
+	fill: none;
+	stroke: black;
+	stroke-width: 1px;
+	shape-rendering: crispEdges;
+}
+
+
+.priceLine {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 3.5px;
+}
+
+.volumeLine {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 3.5px;
+}
+
+.interestLine {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 3.5px;
+}
