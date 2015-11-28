@@ -24,7 +24,7 @@ function refreshData() {
       // set slider bounds
       var start = d3.min(temp, function(d) {return d.filter_date;});
       var end = d3.max(temp, function(d) {return d.filter_date;});
-      var interval = (end - start)/3600000/24/10; //days
+      var interval = (end - start)/3600000/24/20; //days
       $("#dateSlider").dateRangeSlider('option', 'bounds', { min: start, max: end });
       $('#dateSlider').dateRangeSlider('min', start);
       start.setDate(start.getDate() + interval);

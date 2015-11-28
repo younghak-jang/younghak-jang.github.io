@@ -122,4 +122,69 @@ $(function() {
 	</div>
 </div>
 </body>
+
+<script>
+////////////////////////// global variables ////////////////////////
+var svg = d3.select('#content').append("svg").attr('id', 'voronoi');
+var parseDate = d3.time.format("%m/%d/%Y").parse;
+var header = 'contract,delivery_date,trade_date,open_price,high_price,low_price,close_price,volume,interest';
+var data = {'init':null};
+var plot_data, highlight_contract, commodity;
+// file names: hard coded file name, seems javascript access of FS is tricky
+var fileName = {'canola':'canola_sorted_1980-2017.csv',
+                'cocoa':'cocoa_sorted_1970-2017.csv',
+                'corn':'corn_sorted_1960-2015.csv',
+                'coffee':'coffee_c_sorted_1973-2018.csv',
+                'copper':'copper_sorted_1959-2019.csv',
+                'cotton':'cotton_sorted_1969-2017.csv',
+                'wheat':'wheat_sorted_1959-2017.csv',
+                'soybeans':'soybeans_sorted_1960-2016.csv',
+                'oats':'oats_sorted_1960-2016.csv',
+                'orange juice':'orange_juice_sorted_1967-2017.csv',
+                'sugar':'sugar_no11_sorted_1968-2018.csv',
+							  'crude oil':'crude_oil_sorted_1983-2022.csv',
+								'heating oil':'heating_oil_sorted_1980-2018.csv',
+								'gold':'gold_sorted_1975-2019.csv',
+								'palladium':'palladium_sorted_1977-2015.csv',
+								'silver':'silver_sorted_1964-2018.csv',
+								'platinum':'platinum_sorted_1970-2015.csv',
+								'fedder cattle':'feeder_cattle_sorted_1974-2016.csv',
+								'live hogs':'lean_hogs_sorted_1970-2016.csv'};
+
+////////////////////////// global variables ////////////////////////
+
+////////////////////////// event handlers ////////////////////////
+$("#dateSlider").bind("userValuesChanged", function(){
+  console.log(timestamp() + ': new range - ' + $("#dateSlider").dateRangeSlider('min')
+    + ', ' + $("#dateSlider").dateRangeSlider('max'));
+  refreshData();
+});
+
+function clickCommodity(label) {
+	commodity = label.textContent.toLowerCase();
+	console.log(timestamp() + ': ' + commodity + ' is clicked.')
+  refreshData();
+};
+
+function newPriceFunc() {
+  if (plot_data == null || plot_data.length == 0) {
+    console.warn('No data to plot!')
+    return;
+  }
+  console.log(timestamp() + ': plot ' + $('#price').val());
+  refreshChart();
+};
+
+$('svg').on('click', function() {
+  if (highlight_contract == null || highlight_contract == "") {
+    console.log('no contract selected');
+    return;
+  }
+  console.log(highlight_contract + ' is clicked!');
+});
+////////////////////////// event handlers ////////////////////////
+
+</script>
+
+
 </html>
