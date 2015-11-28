@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>W209 - Commodities Prices</title>
+<link rel="stylesheet" type="text/css" href="styles.css" />
+<link rel="stylesheet" href="voronoi_lines.css">
+<link rel="stylesheet" href="iThing.css">
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+<script src="voronoi_lines.js"></script>
+<script src="jQAllRangeSliders-min.js"></script>
+<script src="biz_main.js"></script>
+
+<script>
+$(function() {
+	$("#dateSlider").dateRangeSlider();
+});
+</script>
+
+</head>
+<body>
+<div id="wrapper">
+
+	<div id="top" class="clear">
+		<h1><a href="index.html">Commodity Prices</a></h1>
+
+		<ul>
+			<li><a href="index.html">home</a></li>
+            <li class="selected"><a href="contract.html">Contract Chart</a></li>
+			<li><a href="OneDayChart/BarChartsV1.html">One Day Chart</a></li>
+			<li><a href="contact.html">contact</a></li>
+		</ul>
+	</div>
+
+	<div id="body" class="clear">
+		<div id="sidebar" class="column-left">
+			<ul>
+				<li>
+					<!--<h4>Search our site</h4>
+
+					<form action="#" method="get">
+					<p>
+						<input type="text" id="searchquery" size="15" name="searchterm" />
+						<input type="submit" id="searchbutton" value="Search" class="formbutton" />
+					</p>
+				</form> -->
+
+					<h4>Grains</h4>
+
+					<ul>
+						<li><a onclick="clickCommodity(this)" target="main">Corn</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Oats</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Soybeans</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Wheat</a></li>
+					</ul>
+
+					<h4>Softs</h4>
+
+					<ul>
+						<li><a onclick="clickCommodity(this)" target="main">Coffee</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Cotton</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Orange Juice</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Sugar</a></li>
+					</ul>
+
+					<h4>Energy</h4>
+
+					<ul>
+						<li><a onclick="clickCommodity(this)" target="main">Crude Oil</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Heating Oil</a></li>
+					</ul>
+
+					<h4>Metals</h4>
+
+					<ul>
+						<li><a onclick="clickCommodity(this)" target="main">Copper</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Gold</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Palladium</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Platinum</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Silver</a></li>
+					</ul>
+
+					<h4>Livestock</h4>
+
+					<ul>
+						<li><a onclick="clickCommodity(this)" target="main">Feeder Cattle</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Live Hogs</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Pork Bellies</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<div id="content" class="column-right">
+			<!--<iframe src="intro.html "name="main" frameborder=0 width=900 height=800></iframe>-->
+			<div id="dateSlider"></div>
+			<label for="price">Select a price</label>
+			<select id="price" onchange = "newPriceFunc()">
+			  <option value="close">Close</option>
+			  <option value="open">Open</option>
+			  <option value="high">High</option>
+			  <option value="low">Low</option>
+			</select>
+		</div>
+	</div>
+
+	<div id="footer" class="clear">
+		<div class="footer-box">
+			<h4>MIDS W209 Data Visualization and Communication Final Project</h4>
+			<p>
+				Younghak Jang | Marguerite Oneto | James Route | Lei Yang
+			</p>
+		</div>
+	</div>
+
+	<div id="footer-links">
+		<p>
+			&copy; 2015 Commodity Prices. Design by <a href="http://www.spyka.net">Free CSS Templates</a> and <a href="http://www.justfreetemplates.com">Free Web Templates</a>
+		</p>
+	</div>
+</div>
+</body>
+</html>
