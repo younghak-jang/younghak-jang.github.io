@@ -49,6 +49,7 @@ function plot_voronoi(csv_data, price) {
                   if (!isSingleClicked && highlight_line != null) {
                     d3.select(highlight_line.city.line).classed("city--hover", false);
                     focus.attr("transform", "translate(-100,-100)");
+                    //focus.select('text').attr('x',0).attr('y',0);
                   }
 
               }, DELAY);
@@ -136,7 +137,7 @@ function plot_voronoi(csv_data, price) {
       d3.select(d.city.line).classed("city--hover", true);
       d.city.line.parentNode.appendChild(d.city.line);
       focus.attr("transform", "translate(" + x(d.date) + "," + y(d.value) + ")");
-      focus.select("text").text(d.city.name);
+      focus.select("text").text(d.city.name).attr("transform", "translate(0,0)");
     } else {
       // only move focus point
       var x0 = x.invert(d3.mouse(this)[0]),
@@ -144,11 +145,11 @@ function plot_voronoi(csv_data, price) {
         d0 = highlight_line.city.values[i - 1],
 			  d1 = highlight_line.city.values[i];
       if (d1 == null) return;
-			var d = (x0 - d0.date) > (d1.date - x0) ? d1 : d0;
-      focus.attr("transform", "translate(" + x(d.date) + "," + y(d.value) + ")");
-      focus.select("text").text(d.city.name + ' - '
-          + d.date.getFullYear() + '/' + d.date.getMonth() + '/' + d.date.getDay() + ': $' + d.value)
-        .attr("transform", "translate(0," + (0-y(d.value)) + ")")
+			var ds = (x0 - d0.date) > (d1.date - x0) ? d1 : d0;
+      focus.attr("transform", "translate(" + x(ds.date) + "," + y(ds.value) + ")");
+      focus.select("text").text(ds.city.name + ' - '
+          + ds.date.getFullYear() + '/' + ds.date.getMonth() + '/' + ds.date.getDay() + ': $' + ds.value)
+        .attr("transform", "translate(0," + (0-y(ds.value)) + ")")
         .attr('align', 'left');
     }
   }
