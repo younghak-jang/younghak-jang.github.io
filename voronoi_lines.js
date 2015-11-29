@@ -40,10 +40,16 @@ function plot_voronoi(csv_data, price) {
           if(clicks === 1) {
 
               timer = setTimeout(function() {
-
-                  console.log(highlight_contract + ' Single Click'); //perform single-click action
+                  isSingleClicked = !isSingleClicked;
+                  console.log(highlight_contract + ' is locked: ' + isSingleClicked); //perform single-click action
 
                   clicks = 0;  //after action performed, reset counter
+
+                  // unhighlight line if it's unlocked
+                  if (!isSingleClicked && highlight_line != null) {
+                    d3.select(highlight_line.city.line).classed("city--hover", false);
+                    focus.attr("transform", "translate(-100,-100)");
+                  }
 
               }, DELAY);
 
@@ -127,17 +133,22 @@ function plot_voronoi(csv_data, price) {
       .on("change", function() { voronoiGroup.classed("voronoi--show", this.checked); });
 */
   function mouseover(d) {
-    d3.select(d.city.line).classed("city--hover", true);
-    d.city.line.parentNode.appendChild(d.city.line);
-	  highlight_contract = d.city.name;
-    focus.attr("transform", "translate(" + x(d.date) + "," + y(d.value) + ")");
-    focus.select("text").text(d.city.name);
+    if (!isSingleClicked) {
+      highlight_line = d;
+      highlight_contract = d.city.name;
+      d3.select(d.city.line).classed("city--hover", true);
+      d.city.line.parentNode.appendChild(d.city.line);
+      focus.attr("transform", "translate(" + x(d.date) + "," + y(d.value) + ")");
+      focus.select("text").text(d.city.name);
+    }
   }
 
   function mouseout(d) {
-    d3.select(d.city.line).classed("city--hover", false);
-	highlight_contract = "";
-    focus.attr("transform", "translate(-100,-100)");
+    if (!isSingleClicked) {
+      d3.select(d.city.line).classed("city--hover", false);
+      highlight_contract = "";
+      focus.attr("transform", "translate(-100,-100)");
+    }
   }
   $("body").css("cursor", "default");
   console.log(timestamp() + ': finish plotting ...');

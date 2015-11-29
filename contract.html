@@ -129,7 +129,8 @@ var svg = d3.select('#content').append("svg").attr('id', 'voronoi');
 var parseDate = d3.time.format("%m/%d/%Y").parse;
 var header = 'contract,delivery_date,trade_date,open_price,high_price,low_price,close_price,volume,interest';
 var data = {'init':null};
-var plot_data, highlight_contract, commodity, isClicked;
+var plot_data, highlight_contract, commodity, isSingleClicked = false;
+var highlight_line;
 var DELAY = 330, clicks = 0, timer = null;
 // file names: hard coded file name, seems javascript access of FS is tricky
 var fileName = {'canola':'canola_sorted_1980-2017.csv',
