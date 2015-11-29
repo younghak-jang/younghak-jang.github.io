@@ -31,13 +31,36 @@ function plot_voronoi(csv_data, price) {
    .append("g")
    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  $('svg').on('click', function() {
-    if (highlight_contract == null || highlight_contract == "") {
-      console.log('no contract selected');
-      return;
-    }
-    console.log(highlight_contract + ' is clicked!');
-  });
+  // click handler - single vs. double
+  $("#voronoi")
+      .bind("click", function(e){
+
+          clicks++;  //count clicks
+
+          if(clicks === 1) {
+
+              timer = setTimeout(function() {
+
+                  console.log(highlight_contract + ' Single Click'); //perform single-click action
+
+                  clicks = 0;  //after action performed, reset counter
+
+              }, DELAY);
+
+          } else {
+
+              clearTimeout(timer);  //prevent single-click action
+
+              console.log(highlight_contract + ' Double Click');  //perform double-click action
+
+              clicks = 0;  //after action performed, reset counter
+          }
+
+      })
+      .bind("dblclick", function(e){
+          e.preventDefault();  //cancel system double-click event
+      });
+
 
   // bind data
   console.log(timestamp() + ': start converting data ...');
@@ -59,12 +82,10 @@ function plot_voronoi(csv_data, price) {
 
   svg.append("g")
       .attr("class", "axis axis--y")
-      //.attr('transform', 'translate(30,0)')
       .call(d3.svg.axis()
         .scale(y)
         .orient("left"))
-        //.ticks(10, "%"))
-    .append("text")
+      .append("text")
       .attr("x", 4)
       .attr("dy", ".32em")
       .style("font-weight", "bold")
@@ -108,7 +129,7 @@ function plot_voronoi(csv_data, price) {
   function mouseover(d) {
     d3.select(d.city.line).classed("city--hover", true);
     d.city.line.parentNode.appendChild(d.city.line);
-	highlight_contract = d.city.name;
+	  highlight_contract = d.city.name;
     focus.attr("transform", "translate(" + x(d.date) + "," + y(d.value) + ")");
     focus.select("text").text(d.city.name);
   }
