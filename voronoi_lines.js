@@ -108,8 +108,8 @@ function plot_voronoi(csv_data, price) {
       .attr("transform", "translate(-100,-100)")
       .attr("class", "focus");
 
+  // labels and focus point
   focus.append("circle").attr("r", 3.5);
-
   focus.append("text").attr("y", -10);
 
   var voronoiGroup = svg.append("g").attr("class", "voronoi");
@@ -127,11 +127,8 @@ function plot_voronoi(csv_data, price) {
       .on("mouseover", mouseover)
       .on("mouseout", mouseout);
   console.log(timestamp() + ': finish building voronoi mesh ...');
-/*
-  d3.select("#show-voronoi")
-      .property("disabled", false)
-      .on("change", function() { voronoiGroup.classed("voronoi--show", this.checked); });
-*/
+
+  var bisectData = d3.bisector(function(d) { return d.date; }).left;
   function mouseover(d) {
     if (!isSingleClicked) {
       highlight_line = d;
@@ -140,6 +137,19 @@ function plot_voronoi(csv_data, price) {
       d.city.line.parentNode.appendChild(d.city.line);
       focus.attr("transform", "translate(" + x(d.date) + "," + y(d.value) + ")");
       focus.select("text").text(d.city.name);
+    } else {
+      // only move focus point
+      var x0 = x.invert(d3.mouse(this)[0]),
+        i = bisectData(highlight_line.city.values, x0, 1),
+        d0 = highlight_line.city.values[i - 1],
+			  d1 = highlight_line.city.values[i];
+      if (d1 == null) return;
+			var d = (x0 - d0.date) > (d1.date - x0) ? d1 : d0;
+      focus.attr("transform", "translate(" + x(d.date) + "," + y(d.value) + ")");
+      focus.select("text").text(d.city.name + ' - '
+          + d.date.getFullYear() + '/' + d.date.getMonth() + '/' + d.date.getDay() + ': $' + d.value)
+        .attr("transform", "translate(0," + (0-y(d.value)) + ")")
+        .attr('align', 'left');
     }
   }
 
