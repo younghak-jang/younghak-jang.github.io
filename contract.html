@@ -39,14 +39,6 @@ $(function() {
 		<div id="sidebar" class="column-left">
 			<ul>
 				<li>
-					<!--<h4>Search our site</h4>
-
-					<form action="#" method="get">
-					<p>
-						<input type="text" id="searchquery" size="15" name="searchterm" />
-						<input type="submit" id="searchbutton" value="Search" class="formbutton" />
-					</p>
-				</form> -->
 
 					<h4>Grains</h4>
 
@@ -94,7 +86,6 @@ $(function() {
 			</ul>
 		</div>
 		<div id="content" class="column-right">
-			<!--<iframe src="intro.html "name="main" frameborder=0 width=900 height=800></iframe>-->
 			<div id="dateSlider"></div>
 			<label for="price">Select a price</label>
 			<select id="price" onchange = "newPriceFunc()">
@@ -130,7 +121,7 @@ var parseDate = d3.time.format("%m/%d/%Y").parse;
 var header = 'contract,delivery_date,trade_date,open_price,high_price,low_price,close_price,volume,interest';
 var data = {'init':null};
 var plot_data, highlight_contract, commodity, isSingleClicked = false;
-var highlight_line;
+var highlight_line, selected_label;
 var DELAY = 330, clicks = 0, timer = null;
 // file names: hard coded file name, seems javascript access of FS is tricky
 var fileName = {'canola':'canola_sorted_1980-2017.csv',
@@ -163,7 +154,10 @@ $("#dateSlider").bind("userValuesChanged", function(){
 });
 
 function clickCommodity(label) {
+	if (selected_label != null) $(selected_label).css({'text-decoration': 'none'});
 	commodity = label.textContent.toLowerCase();
+	$(label).css({'color':'green', 'text-decoration': 'underline'});
+	selected_label = label;
 	console.log(timestamp() + ': ' + commodity + ' is clicked.')
   refreshData();
 };
