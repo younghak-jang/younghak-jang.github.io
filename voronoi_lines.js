@@ -26,7 +26,7 @@ function plot_voronoi(csv_data, price) {
 
   // remove previous one then add
   d3.select('#voronoi').remove();
-  svg = d3.select('#content').append("svg").attr('id', 'voronoi')
+  svg = d3.select('#tab1').append("svg").attr('id', 'voronoi')
    .attr("width", width + margin.left + margin.right)
    .attr("height", height + margin.top + margin.bottom)
    .append("g")
@@ -61,6 +61,9 @@ function plot_voronoi(csv_data, price) {
               console.log(highlight_contract + ' Double Click');  //perform double-click action
 
               clicks = 0;  //after action performed, reset counter
+              $( "#tabs" ).tabs( "option", "active", 1 );
+              $('#tab2').select('p').text('Contract chart of ' + commodity + ', ' + highlight_contract + ' will show up here.' )
+              $('#tab3').select('p').text('One-day chart of ' + commodity + ', ' + highlight_contract + ' will show up here.' )
           }
 
       })
