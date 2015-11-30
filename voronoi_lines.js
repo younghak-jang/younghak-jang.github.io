@@ -5,6 +5,7 @@ function plot_voronoi(csv_data, price) {
   $("body").css("cursor", "progress");
   var highlight_contract,
     dayFormat = d3.time.format("%m/%d/%Y").parse;
+    isSingleClicked = false;
 
  var margin = {top: 20, right: 30, bottom: 30, left: 40},
   	width = 960 - margin.left - margin.right,
@@ -48,7 +49,7 @@ function plot_voronoi(csv_data, price) {
                   // unhighlight line if it's unlocked
                   if (!isSingleClicked && highlight_line != null) {
                     d3.select(highlight_line.city.line).classed("city--hover", false);
-                    focus.attr("transform", "translate(-100,-100)");                    
+                    focus.attr("transform", "translate(-100,-100)");
                   }
 
               }, DELAY);
