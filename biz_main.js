@@ -4,8 +4,8 @@ function refreshData() {
   //var commodity = $('#commodity').val().toLowerCase();
   var file = fileName[commodity];
   if (file == null) {
-      alert('Raw data not found for ' + commodity);
-      return;
+    if (commodity != null) alert('Raw data not found for ' + commodity);
+    return;
   }
 
   // load csv and filter
