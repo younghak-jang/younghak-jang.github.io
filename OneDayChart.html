@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>W209 - Commodities Prices</title>
+<link rel="stylesheet" type="text/css" href="styles.css" />
+<link rel="stylesheet" type="text/css" href="OneDayChart/BarChartsV1.css" /> 
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+<script src="OneDayChart.js"></script>
+<script src="OneDayChart.eventHandler.js"></script>
+<script src="biz_main_OneDayChart.js"></script>
+
+</head>
+<body>
+<div id="wrapper">
+
+	<div id="top" class="clear">
+		<h1><a href="index.html">Commodity Prices</a></h1>
+
+		<ul>
+			<li><a href="index.html">home</a></li>
+			<li><a href="contract.html">Individual Commodity Chart</a></li>
+            <li><a href="IndividualContractChart/ContractChartsV1.html">Individual Contract Chart</a></li>
+            <li class="selected"><a href="OneDayChart.html">One Day Chart</a></li>
+			<li><a href="contact.html">contact</a></li>
+		</ul>
+	</div>
+
+	<div id="body" class="clear">
+		<div id="sidebar" class="column-left">
+			<ul>
+				<li>
+
+					<h4>Grains</h4>
+
+					<ul>
+						<li><a onclick="clickCommodity(this)" target="main">Corn</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Oats</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Soybeans</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Wheat</a></li>
+					</ul>
+
+					<h4>Softs</h4>
+
+					<ul>
+						<li><a onclick="clickCommodity(this)" target="main">Coffee</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Cotton</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Orange Juice</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Sugar</a></li>
+					</ul>
+
+					<h4>Energy</h4>
+
+					<ul>
+						<li><a onclick="clickCommodity(this)" target="main">Crude Oil</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Heating Oil</a></li>
+					</ul>
+
+					<h4>Metals</h4>
+
+					<ul>
+						<li><a onclick="clickCommodity(this)" target="main">Copper</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Gold</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Palladium</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Platinum</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Silver</a></li>
+					</ul>
+
+					<h4>Livestock</h4>
+
+					<ul>
+						<li><a onclick="clickCommodity(this)" target="main">Feeder Cattle</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Live Hogs</a></li>
+						<li><a onclick="clickCommodity(this)" target="main">Pork Bellies</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+
+		<div id="content" class="column-right">
+		    <p id = "commodityTitle"> Please select a commodity from the list to the right. </p>
+		    <label hidden id = "tradeDateLabel"> Trade Date: </label>
+		    <select hidden id = "selectContract" onchange = "newContractFunc();"></select>
+		    <div id = "PriceChartContainer"></div>
+		    <div id = "VolumeChartContainer"></div>
+		    <div id = "InterestChartContainer"></div>
+		</div>
+	</div>
+
+	<div id="footer" class="clear">
+		<div class="footer-box">
+			<h4>MIDS W209 Data Visualization and Communication Final Project</h4>
+			<p>
+				Younghak Jang | Marguerite Oneto | James Route | Lei Yang
+			</p>
+		</div>
+	</div>
+
+	<div id="footer-links">
+		<p>
+			&copy; 2015 Commodity Prices. Design by <a href="http://www.spyka.net">Free CSS Templates</a> and <a href="http://www.justfreetemplates.com">Free Web Templates</a>
+		</p>
+	</div>
+</div>
+</body>
+
+<script>
+////////////////////////// global variables ////////////////////////
+var width = 800;
+var parseDate = d3.time.format("%x").parse,
+    formatDate = d3.time.format("%b-%Y"),
+    formatDate2 = d3.time.format("%x"),
+    bisectDate = d3.bisector(function(d) { return d.date; }).left,
+    formatWithCommas = d3.format("0,000")
+    formatValue = d3.format(",.2f"),
+    formatCurrency = function(d) { return "$" + formatValue(d); };
+var header = 'contract,delivery_date,trade_date,open_price,high_price,low_price,close_price,volume,interest';
+var data = {'init':null};
+var plot_data, highlight_contract, commodity, isSingleClicked = false;
+var highlight_line, selected_label;
+var DELAY = 330, clicks = 0, timer = null;
+// file names: hard coded file name, seems javascript access of FS is tricky
+var fileName = {'canola':'canola_sorted_1980-2017.csv',
+                'cocoa':'cocoa_sorted_1970-2017.csv',
+                'corn':'corn_sorted_1960-2015.csv',
+                'coffee':'coffee_c_sorted_1973-2018.csv',
+                'copper':'copper_sorted_1959-2019.csv',
+                'cotton':'cotton_sorted_1969-2017.csv',
+                'wheat':'wheat_sorted_1959-2017.csv',
+                'soybeans':'soybeans_sorted_1960-2016.csv',
+                'oats':'oats_sorted_1960-2016.csv',
+                'orange juice':'orange_juice_sorted_1967-2017.csv',
+                'sugar':'sugar_no11_sorted_1968-2018.csv',
+				'crude oil':'crude_oil_sorted_1983-2022.csv',
+				'heating oil':'heating_oil_sorted_1980-2018.csv',
+				'gold':'gold_sorted_1975-2019.csv',
+				'palladium':'palladium_sorted_1977-2015.csv',
+				'silver':'silver_sorted_1964-2018.csv',
+				'platinum':'platinum_sorted_1970-2015.csv',
+				'feeder cattle':'feeder_cattle_sorted_1974-2016.csv',
+				'live hogs':'lean_hogs_sorted_1970-2016.csv'};
+
+////////////////////////// global variables ////////////////////////
+
+////////////////////////// event handlers ////////////////////////
+function clickCommodity(label) {
+	if (selected_label != null) $(selected_label).css({'text-decoration': 'none'});
+	commodity = label.textContent.toLowerCase();
+	$(label).css({'color':'green', 'text-decoration': 'underline'});
+	selected_label = label;
+	console.log(': ' + commodity + ' is clicked.');
+	commodityTitle.innerHTML = label.textContent;
+	selectContract.hidden = false;
+	tradeDateLabel.hidden = false;
+    refreshData(commodity);
+};
+
+</script>
+
+
+</html>
