@@ -10,7 +10,7 @@ function newContractFunc() {
     
     function customAxis(g) {
      g.selectAll("text")
-      .attr("x", -30)
+      .attr("x", -50)
       .attr("dy", 0);
     }
     
@@ -113,18 +113,21 @@ function mousemove() {
   temp_x=x0;
   
   labels11.text(formatDate2(d.trade_date) + ":")
-         .attr("transform", "translate(" + (x_time(x0)) + ", -5)");
-
+         .attr("transform", "translate(" + (x_time(x0)) + ", -5)")
+         .style("font-size", "12px");
+         
   labels12.text(function(d) {return d.name == 'volume'? d.values[i].price: (formatCurrency(d.values[i].price)); })
          .attr("transform", function(d) { return "translate(" + (x_time(x0) + priceColors.domain().indexOf(d.name)*50) + ", -5)"; })
-         .style("opacity", 1.0);
-
+         .style("opacity", 1.0)
+         .style("font-size", "12px");
          
   labels2.text(formatWithCommas(d.volume))
-         .attr("transform", "translate(" + (x_time(x0) + 10) + ", -5)");
+         .attr("transform", "translate(" + (x_time(x0) + 10) + ", -5)")
+         .style("font-size", "12px");
          
   labels3.text(formatWithCommas(d.interest))
-         .attr("transform", "translate(" + (x_time(x0) + 10) + ", -5)");
+         .attr("transform", "translate(" + (x_time(x0) + 10) + ", -5)")
+         .style("font-size", "12px");
 
   vData1[0].date = vData1[1].date = x0;
   vData1[0].price = 0;

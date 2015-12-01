@@ -40,13 +40,13 @@ y_interest = d3.scale.linear().range([height3, 0]);
 xAxis1 = d3.svg.axis().scale(x_time).orient("bottom");
 xAxis2 = d3.svg.axis().scale(x_time).orient("bottom");
 xAxis3 = d3.svg.axis().scale(x_time).orient("bottom");
-yAxis1 = d3.svg.axis().scale(y_price).orient("right").ticks(5).tickSize(width).outerTickSize(0);
+yAxis1 = d3.svg.axis().scale(y_price).orient("right").ticks(5).tickSize(width).outerTickSize(0).tickFormat( function (d) { return formatValue(d) ;});
 yAxis2 = d3.svg.axis().scale(y_volume).orient("left").ticks(3).outerTickSize(0);
 yAxis3 = d3.svg.axis().scale(y_interest).orient("left").ticks(3).outerTickSize(0);
 
 function customAxis(g) {
      g.selectAll("text")
-      .attr("x", -30)
+      .attr("x", -50)
       .attr("dy", 0);
 }
 
