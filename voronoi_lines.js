@@ -1,4 +1,5 @@
 
+
 function plot_voronoi(csv_data, price) {
 
   console.log(timestamp() + ': start plotting ...');
@@ -61,9 +62,13 @@ function plot_voronoi(csv_data, price) {
               console.log(highlight_contract + ' Double Click');  //perform double-click action
 
               clicks = 0;  //after action performed, reset counter
-              $( "#tabs" ).tabs( "option", "active", 1 );
-              $('#tab2').select('p').text('Contract chart of ' + commodity + ', ' + highlight_contract + ' will show up here.' )
-              $('#tab3').select('p').text('One-day chart of ' + commodity + ', ' + highlight_contract + ' will show up here.' )
+              if (isSingleClicked) {
+                $('#tab3').select('p').text('One-day chart of ' + commodity + ', ' + highlight_contract + ' will show up here.' )
+                $( "#tabs" ).tabs( "option", "active", 2 );
+              } else {
+                plot_IndContractChart(data[commodity]);
+                $( "#tabs" ).tabs( "option", "active", 1 );
+              }
           }
 
       })

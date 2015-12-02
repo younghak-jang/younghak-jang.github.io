@@ -3,15 +3,15 @@ function plot_IndContractChart(csv_data) {
 
   console.log(': start plotting ...');
   $("body").css("cursor", "progress");
-  
+
 
 d3.select('#PriceChartContainer').remove()
 d3.select('#VolumeChartContainer').remove()
 d3.select('#InterestChartContainer').remove()
 
-d3.select('#content').append("div").attr('id', 'PriceChartContainer');
-d3.select('#content').append("div").attr('id', 'VolumeChartContainer');
-d3.select('#content').append("div").attr('id', 'InterestChartContainer');
+d3.select('#tab2').append("div").attr('id', 'PriceChartContainer');
+d3.select('#tab2').append("div").attr('id', 'VolumeChartContainer');
+d3.select('#tab2').append("div").attr('id', 'InterestChartContainer');
 
 // set sizes
 var margin = {top: 50, right: 250, bottom: 50, left: 100},
@@ -58,7 +58,7 @@ line1 = d3.svg.line()
 line2 = d3.svg.line()
   .x(function(d) { return (x_time(d.date) ) })
   .y(function(d) { return y_volume(d.volume); })
-    
+
 line3 = d3.svg.line()
   .x(function(d) { return (x_time(d.date) ) })
   .y(function(d) { return y_interest(d.interest) });
@@ -91,22 +91,22 @@ svgInterestChart = d3.select("#InterestChartContainer").append("svg")
 
 
 // read & bind data
-data = csv_data
+var data = csv_data
 
 // choose which variables to plot
   priceColors.domain(d3.keys(data[0]).filter(function(key) {
     return key.indexOf("price") >= 0;
   }));
-  
+
   volumeColors.domain(d3.keys(data[0]).filter(function(key) {
     return key.indexOf("volume") >= 0;
   }));
-  
+
   interestColors.domain(d3.keys(data[0]).filter(function(key) {
     return key.indexOf("interest") >= 0;
   }));
-  
-    
+
+  if (jQuery.type(data[0].delivery_date) != 'date'){
   data.forEach(function(d) {
     d.delivery_date = parseDate(d.delivery_date)
     d.trade_date = parseDate(d.trade_date)
@@ -117,12 +117,14 @@ data = csv_data
     d.volume = +d.volume;
     d.interest = +d.interest;
   });
+  }
 
   corn = data;
 
   // populate contracts
   var contracts = d3.set(corn.map(function(d) { return d.delivery_date })).values();
   var earliest = d3.min(contracts)
+
   var sel = document.getElementById('selectContract');
   for(var i = 0; i < contracts.length; i++) {
     var opt = document.createElement('option');
@@ -132,19 +134,19 @@ data = csv_data
     sel.appendChild(opt);
   }
   sel.value = earliest
-  
-    
+
+
     // subset data by delivery_date
   contract_data = data.filter(function(d) { return d.delivery_date == earliest });
   console.log('contract_data[0] = ' + contract_data[0] + '.')
   num_contracts = d3.set(contract_data.map(function(d) { return d.trade_date; })).values().length
   console.log('num_contracts = ' + num_contracts + '.')
   center_adj = width/2/(num_contracts)
-  
+
   contract_data.sort(function(a, b) {
       return a.trade_date - b.trade_date;
     });
-  
+
   prices = priceColors.domain().map(function(name) {
     return {
       name: name,
@@ -162,7 +164,7 @@ data = csv_data
       })
     };
   });
-  
+
   interests = interestColors.domain().map(function(name) {
     return {
       name: name,
@@ -176,12 +178,12 @@ data = csv_data
   // set axis domains
   x_time.domain(d3.extent(contract_data, function(d) { return d.trade_date; }));
   console.log('x_time.domain = ' + x_time.domain)
-  
+
   y_price.domain([
     d3.min(prices.filter(function(d) { return d.name.indexOf('price')>=0}), function(c) { return d3.min(c.values, function(v) { return v.price; }); }),
     d3.max(prices.filter(function(d) { return d.name.indexOf('price')>=0}), function(c) { return d3.max(c.values, function(v) { return v.price; }); })
   ]);
-  
+
   y_price.domain([y_price.domain()[0], y_price.domain()[1] + (y_price.domain()[1] - y_price.domain()[0])*0.10]);
 
 
@@ -189,33 +191,33 @@ data = csv_data
     d3.min(volumes.filter(function(d) { return d.name.indexOf('volume')>=0}), function(c) { return d3.min(c.values, function(v) { return v.volume; }); }),
     d3.max(volumes.filter(function(d) { return d.name.indexOf('volume')>=0}), function(c) { return d3.max(c.values, function(v) { return v.volume; }); })
   ]);
-  
+
   y_volume.domain([y_volume.domain()[0], y_volume.domain()[1] + (y_volume.domain()[1] - y_volume.domain()[0])*0.10]);
-  
+
   y_interest.domain([
     d3.min(interests.filter(function(d) { return d.name.indexOf('interest')>=0}), function(c) { return d3.min(c.values, function(v) { return v.interest; }); }),
     d3.max(interests.filter(function(d) { return d.name.indexOf('interest')>=0}), function(c) { return d3.max(c.values, function(v) { return v.interest; }); })
   ]);
-  
+
   y_interest.domain([y_interest.domain()[0], y_interest.domain()[1] + (y_interest.domain()[1] - y_interest.domain()[0])*0.10]);
-  
+
   console.log(':data[0].trade_date = ' + data[0].trade_date)
   vData1 = [{"date":data[0].trade_date, "price": 0},
             {"date":data[0].trade_date, "price": y_price.domain()[1]}]
-  
+
   vData2 = [{"date":data[0].trade_date, "volume": 0},
             {"date":data[0].trade_date, "volume": y_volume.domain()[1]}]
 
   vData3 = [{"date":data[0].trade_date, "interest": 0},
             {"date":data[0].trade_date, "interest": y_interest.domain()[1]}]
 
-  
+
   // add axis elements
   svgXAxis1 = svgPriceChart.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height1 + ")")
       .call(xAxis1);
-      
+
   svgYAxis1 = svgPriceChart.append("g")
       .attr("class", "y axis")
       .call(yAxis1)
@@ -225,16 +227,16 @@ data = csv_data
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height2 + ")")
       .call(xAxis2);
-      
+
   svgYAxis2 = svgVolumeChart.append("g")
       .attr("class", "y axis")
       .call(yAxis2);
-  
+
   svgXAxis3 = svgInterestChart.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height3 + ")")
       .call(xAxis3);
- 
+
   svgXAxis3.append("text")
       .attr("y", 20)
       .attr("x", width)
@@ -243,12 +245,12 @@ data = csv_data
       .style("font-size", "14px")
       .style("font-weight", "bold")
       .text("Trade Date");
- 
+
   svgYAxis3 = svgInterestChart.append("g")
       .attr("class", "y axis")
       .call(yAxis3);
-      
-  // add price chart elements    
+
+  // add price chart elements
   var price = svgPriceChart.selectAll(".price")
       .data(prices)
       .enter().append("g")
@@ -264,16 +266,16 @@ data = csv_data
   vLine1 = svgPriceChart.append("path")
       .datum(vData1)
       .attr("class", "vLine1")
-      .attr("d", line1);        
+      .attr("d", line1);
 
-  
+
   //add title
   svgPriceChart.append("text")
-        .attr("x", (width / 2))             
+        .attr("x", (width / 2))
         .attr("y", 0 - margin.top/3)
-        .attr("text-anchor", "middle")  
-        .style("font-size", "14px") 
-        .style("font-weight", "bold")  
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
         .text("Price ($)");
 
 
@@ -282,8 +284,8 @@ data = csv_data
       .data(volumes)
       .enter().append("g")
       .attr("class", "volume");
-      
-      
+
+
   volumeBars =  volume.selectAll("rect")
       .data(function (d) { return d.values; })
       .enter().append("rect")
@@ -297,25 +299,25 @@ data = csv_data
   vLine2 = svgVolumeChart.append("path")
       .datum(vData2)
       .attr("class", "vLine2")
-      .attr("d", line2);        
-        
+      .attr("d", line2);
+
   //add title
   svgVolumeChart.append("text")
-        .attr("x", (width / 2))             
+        .attr("x", (width / 2))
         .attr("y", 0 - margin.top/3)
-        .attr("text-anchor", "middle")  
-        .style("font-size", "14px") 
-        .style("font-weight", "bold")  
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
         .text("Volume");
-        
+
 
   // add open interest chart elements
   var interest = svgInterestChart.selectAll(".interest")
       .data(interests)
       .enter().append("g")
       .attr("class", "interest");
-      
-      
+
+
   interestBars =  interest.selectAll("rect")
       .data(function (d) { return d.values; })
       .enter().append("rect")
@@ -329,15 +331,15 @@ data = csv_data
   vLine3 = svgInterestChart.append("path")
       .datum(vData3)
       .attr("class", "vLine3")
-      .attr("d", line3);        
-        
+      .attr("d", line3);
+
   //add title
   svgInterestChart.append("text")
-        .attr("x", (width / 2))             
+        .attr("x", (width / 2))
         .attr("y", 0 - margin.top/3)
-        .attr("text-anchor", "middle")  
-        .style("font-size", "14px") 
-        .style("font-weight", "bold")  
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
         .text("Open Interest");
 
   // add vertical line parameters
@@ -346,7 +348,7 @@ data = csv_data
         .enter().append("g")
         .attr("class", "tooltip")
         .style("display", "none");
-        
+
   var tooltip2 = svgVolumeChart.selectAll(".tooltip")
         .data(volumes)
         .enter().append("g")
@@ -361,22 +363,22 @@ data = csv_data
 
   labels11 = svgPriceChart.append("text")
         .attr("x", -75)
-        .attr("dy", ".35em")        
+        .attr("dy", ".35em")
         .style("stroke", "black");
-  
+
   labels12 = tooltip1.append("text")
         .attr("x", 9)
-        .attr("dy", ".35em")        
+        .attr("dy", ".35em")
         .style("stroke", function(d) { return priceColors(d.name); });
-        
+
   labels2 = svgVolumeChart.append("text")
         .attr("x", 9)
-        .attr("dy", ".35em")        
+        .attr("dy", ".35em")
         .style("stroke", "black");
-        
+
   labels3 = svgInterestChart.append("text")
         .attr("x", 9)
-        .attr("dy", ".35em")        
+        .attr("dy", ".35em")
         .style("stroke", "black");
 
   svgPriceChart.append("rect")
@@ -388,7 +390,7 @@ data = csv_data
          tooltip1.style("display", null);
          })
       .on("mousemove", mousemove);
-      
+
   svgVolumeChart.append("rect")
       .attr("class", "overlay")
       .attr("width", width)
@@ -398,7 +400,7 @@ data = csv_data
         tooltip2.style("display", null);
       })
       .on("mousemove", mousemove);
-      
+
   svgInterestChart.append("rect")
       .attr("class", "overlay")
       .attr("width", width)
