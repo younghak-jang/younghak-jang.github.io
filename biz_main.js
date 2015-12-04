@@ -25,6 +25,16 @@ function refreshData() {
       var temp = d3.csv.parse(header + '\n' + text);
       temp.forEach(function(d) {
         d.filter_date = parseDate(d.trade_date);
+        // added by MO
+        d.delivery_date = parseDate(d.delivery_date)
+        d.trade_date = parseDate(d.trade_date)
+        d.open_price = +d.open_price;
+        d.high_price = +d.high_price;
+        d.low_price = +d.low_price;
+        d.close_price = +d.close_price;
+        d.volume = +d.volume;
+        d.interest = +d.interest;
+        // added by MO        
       });
       // set slider bounds
       var start = d3.min(temp, function(d) {return d.filter_date;});

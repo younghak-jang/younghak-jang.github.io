@@ -106,18 +106,18 @@ var data = csv_data
     return key.indexOf("interest") >= 0;
   }));
 
-  if (jQuery.type(data[0].delivery_date) != 'date'){
-    data.forEach(function(d) {
-    d.delivery_date = parseDate(d.delivery_date)
-    d.trade_date = parseDate(d.trade_date)
-    d.open_price = +d.open_price;
-    d.high_price = +d.high_price;
-    d.low_price = +d.low_price;
-    d.close_price = +d.close_price;
-    d.volume = +d.volume;
-    d.interest = +d.interest;
-  })
-  };
+//   if (jQuery.type(data[0].delivery_date) != 'date'){
+//     data.forEach(function(d) {
+//     d.delivery_date = parseDate(d.delivery_date)
+//     d.trade_date = parseDate(d.trade_date)
+//     d.open_price = +d.open_price;
+//     d.high_price = +d.high_price;
+//     d.low_price = +d.low_price;
+//     d.close_price = +d.close_price;
+//     d.volume = +d.volume;
+//     d.interest = +d.interest;
+//   })
+//   };
   
   corn = data;
   // populate contracts
@@ -426,5 +426,6 @@ legend = svgPriceChart.append("g")
       .call(d3.legend);
 
 $("body").css("cursor", "default");
+console.log(':finished plotting contract chart ...');
 
 }

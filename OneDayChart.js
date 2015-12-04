@@ -1,8 +1,8 @@
 
-function plot_OneDayChart(csv_data, date) {
+function plot_OneDayChart(csv_data, plot_date3) {
 
   console.log(': start plotting one-day chart ...');
-  console.log(': date = ' + date);
+  console.log(': plot_date3 = ' + plot_date3);
   $("body").css("cursor", "progress");
   
 
@@ -94,63 +94,59 @@ svgInterestChart = d3.select("#InterestChartContainer3").append("svg")
 
 
 // read & bind data
-plot_data = csv_data;
+plot_data3 = csv_data;
 
   // choose which variables to plot
-  priceColors.domain(d3.keys(plot_data[0]).filter(function(key) {
+  priceColors.domain(d3.keys(plot_data3[0]).filter(function(key) {
     return key.indexOf("close_price") >= 0;
   }));
   
-  volumeColors.domain(d3.keys(plot_data[0]).filter(function(key) {
+  volumeColors.domain(d3.keys(plot_data3[0]).filter(function(key) {
     return key.indexOf("volume") >= 0;
   }));
   
-  interestColors.domain(d3.keys(plot_data[0]).filter(function(key) {
+  interestColors.domain(d3.keys(plot_data3[0]).filter(function(key) {
     return key.indexOf("interest") >= 0;
   }));
   
-  console.log("d3.keys(plot_data[0]) = " + d3.keys(plot_data[0]));
-  console.log("plot_data[1].delivery_date = " + plot_data[1].delivery_date);
-  if (jQuery.type(plot_data[0].delivery_date) != 'date'){
-    plot_data.forEach(function(d) {
+//   if (jQuery.type(plot_data[0].delivery_date) != 'date'){
+//     plot_data.forEach(function(d) {
 //     d.delivery_date = parseDate(d.delivery_date)
 //     d.trade_date = parseDate(d.trade_date)
-    d.open_price = +d.open_price;
-    d.high_price = +d.high_price;
-    d.low_price = +d.low_price;
-    d.close_price = +d.close_price;
-    d.volume = +d.volume;
-    d.interest = +d.interest;
-  })
-  };
+//     d.open_price = +d.open_price;
+//     d.high_price = +d.high_price;
+//     d.low_price = +d.low_price;
+//     d.close_price = +d.close_price;
+//     d.volume = +d.volume;
+//     d.interest = +d.interest;
+//   })
+//   };
 
-  corn = plot_data;
+  corn = plot_data3;
   
   // populate trade dates
   var contracts = corn.map(function(d) { return d.trade_date; });
   var earliest = d3.min(contracts);
   var latest = d3.max(contracts);
-  if (date = parseDate('01/01/1900')) {
-     date = earliest
+  
+  if (plot_date3 <= parseDate('01/02/1900')) {
+           plot_date3 = earliest;
   };
+  console.log(':earliest = ' + earliest);
+  console.log(':latest = ' + latest);
+  console.log(':plot_date3 = ' + plot_date3);
   
   // initialize datepicker 
-  $( "#datepicker" ).datepicker().datepicker({
-      "minDate": earliest,
-      "maxDate": latest,
-      "defaultDate": date,
-      "setDate": date
-    });
-  $('#datepicker').datepicker().datepicker('setDate', formatDate2(new Date(date))) ;
-  
+  $( "#datepicker" ).datepicker( "option", "minDate", formatDate2(earliest) );
+  $( "#datepicker" ).datepicker( "option", "maxDate", formatDate2(latest) );
+  $( "#datepicker" ).datepicker( "option", "defaultDate", formatDate2(plot_date3) );
+  $('#datepicker').datepicker().datepicker('setDate', formatDate2(plot_date3)) ;
+    
   tradeDateLabel.hidden = false
   datepicker.hidden = false
-  console.log(': in datepicker, correct date should be showing')
-  console.log(': earliest = ' + earliest + '.')
-  console.log(': latest = ' + latest + '.')
     
   // subset data by trade_date
-  contract_data = plot_data.filter(function(d) { return formatDate2(new Date(d.trade_date)) == formatDate2(new Date(date)); });
+  contract_data = plot_data3.filter(function(d) { return formatDate2(new Date(d.trade_date)) == formatDate2(new Date(plot_date3)); });
   num_contracts = contract_data.map(function(d) { return d.delivery_date; }).length;
   center_adj = width/2/(num_contracts)
   console.log('num_contracts = ' + num_contracts)
@@ -360,5 +356,5 @@ plot_data = csv_data;
         .text("Open Interest");
 
 $("body").css("cursor", "default");
-
+console.log(':finished plotting one-day chart ...');
 }

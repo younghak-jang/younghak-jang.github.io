@@ -25,8 +25,6 @@
 <script src="biz_main_IndContractChart.js"></script>
 
 <script src="OneDayChart.js"></script>
-<script src="OneDayChart.eventHandler.js"></script>
-<script src="biz_main_OneDayChart.js"></script>
 
 <script>
 	$(function() {
@@ -247,8 +245,10 @@ $(function() {
       showAnim: "slideDown",
       stepMonths: 1,
       onSelect: function (date) {
-            refreshData3(commodity, parseDate(date));
-        }
+// changed by MO            refreshData3(commodity, parse(date));
+          plot_OneDayChart(data[commodity], parseDate(date));
+// changed by MO
+      }
     })
   });
 ////////////////////////// event handlers ////////////////////////
