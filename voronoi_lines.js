@@ -184,8 +184,8 @@ function converter(csvData, field) {
 	contract_data.values = contract_rows.map(function(row) {
 	  return {
 	    city: contract_data,
-		date: row.filter_date, //dayFormat(row.trade_date),
-		value: +row[field] // price type
+		date: row.trade_date, //dayFormat(row.trade_date),
+		value: row[field] // price type
 	  };
 	});
 	return contract_data;

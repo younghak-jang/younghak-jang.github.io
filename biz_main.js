@@ -1,10 +1,10 @@
 
 // refresh data based on UI values
 function refreshData() {
-  
+
   // update tab titles with current commodity name
   tab1Label.innerText = 'Main Chart: ' + commodity.toUpperCase();
-  tab2Label.innerText = 'Contract Chart: ' + commodity.toUpperCase();      
+  tab2Label.innerText = 'Contract Chart: ' + commodity.toUpperCase();
   tab3Label.innerText = 'One-Day Chart: ' + commodity.toUpperCase();
 
   var file = fileName[commodity];
@@ -23,8 +23,7 @@ function refreshData() {
 		    throw error;
 	    }
       var temp = d3.csv.parse(header + '\n' + text);
-      temp.forEach(function(d) {
-        d.filter_date = parseDate(d.trade_date);
+      temp.forEach(function(d) {        
         // added by MO
         d.delivery_date = parseDate(d.delivery_date)
         d.trade_date = parseDate(d.trade_date)
@@ -34,11 +33,11 @@ function refreshData() {
         d.close_price = +d.close_price;
         d.volume = +d.volume;
         d.interest = +d.interest;
-        // added by MO        
+        // added by MO
       });
       // set slider bounds
-      var start = d3.min(temp, function(d) {return d.filter_date;});
-      var end = d3.max(temp, function(d) {return d.filter_date;});
+      var start = d3.min(temp, function(d) {return d.trade_date;});
+      var end = d3.max(temp, function(d) {return d.trade_date;});
       var interval = (end - start)/3600000/24/20; //days
       $("#dateSlider").dateRangeSlider('option', 'bounds', { min: start, max: end });
       $('#dateSlider').dateRangeSlider('min', start);
@@ -49,7 +48,7 @@ function refreshData() {
       console.log(timestamp() + ': data load completed for ' + commodity + ' with ' + temp.length + ' rows.');
 	    $("body").css("cursor", "default");
       filterData(temp);
-      
+
     });
   } else {
     filterData(data[commodity]);
@@ -62,7 +61,7 @@ function filterData(com_data) {
   var startDate = $('#dateSlider').dateRangeSlider('min');
   var endDate = $('#dateSlider').dateRangeSlider('max');
   plot_data = com_data.filter(function(d) {
-    return d.filter_date >= startDate && d.filter_date <= endDate;
+    return d.trade_date >= startDate && d.trade_date <= endDate;
   });
   if (plot_data.length == 0) {
     alert('No data found in the selected range!');
@@ -100,7 +99,3 @@ function refreshChart3() {
   }
   plot_OneDayChart(data[commodity], main_trade_date)
 }
-
-
-
-
