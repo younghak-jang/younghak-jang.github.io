@@ -1,7 +1,12 @@
 
 // refresh data based on UI values
 function refreshData() {
-  //var commodity = $('#commodity').val().toLowerCase();
+  
+  // update tab titles with current commodity name
+  tab1Label.innerText = 'Main Chart: ' + commodity.toUpperCase();
+  tab2Label.innerText = 'Contract Chart: ' + commodity.toUpperCase();      
+  tab3Label.innerText = 'One-Day Chart: ' + commodity.toUpperCase();
+
   var file = fileName[commodity];
   if (file == null) {
     if (commodity != null) alert('Raw data not found for ' + commodity);
@@ -34,6 +39,7 @@ function refreshData() {
       console.log(timestamp() + ': data load completed for ' + commodity + ' with ' + temp.length + ' rows.');
 	    $("body").css("cursor", "default");
       filterData(temp);
+      
     });
   } else {
     filterData(data[commodity]);
@@ -54,14 +60,37 @@ function filterData(com_data) {
   }
   console.log(timestamp() + ': find ' + plot_data.length + ' rows after filtering');
   refreshChart();
+  refreshChart2();
+  refreshChart3()
 }
 
-// refresh chart for the new context
+// refresh main chart for the new context
 function refreshChart() {
   if (plot_data.length == 0) {
+    console.log(':plot_data is empty')
     return;
   }
-
   plot_voronoi(plot_data, $('#price').val());
-
 }
+
+// refresh contract chart for the new context
+function refreshChart2() {
+  if (data[commodity].length == 0) {
+    console.log(':data[commodity] is empty')
+    return;
+  }
+  plot_IndContractChart(data[commodity], main_delivery_date)
+}
+
+// refresh one-day chart for the new context
+function refreshChart3() {
+  if (data[commodity].length == 0) {
+    console.log(':data[commodity] is empty')
+    return;
+  }
+  plot_OneDayChart(data[commodity], main_trade_date)
+}
+
+
+
+

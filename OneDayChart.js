@@ -1,25 +1,26 @@
 
-function plot_OneDayChart(csv_data) {
+function plot_OneDayChart(csv_data, date) {
 
-  console.log(': start plotting ...');
+  console.log(': start plotting one-day chart ...');
+  console.log(': date = ' + date);
   $("body").css("cursor", "progress");
   
 
 // d3.select('#SelectBoxContainer').remove()
-d3.select('#PriceChartContainer').remove()
-d3.select('#VolumeChartContainer').remove()
-d3.select('#InterestChartContainer').remove()
+d3.select('#PriceChartContainer3').remove();
+d3.select('#VolumeChartContainer3').remove();
+d3.select('#InterestChartContainer3').remove();
 
 // d3.select('#content').append("div").attr('id', 'SelectBoxContainer')
-d3.select('#content').append("div").attr('id', 'PriceChartContainer');
-d3.select('#content').append("div").attr('id', 'VolumeChartContainer');
-d3.select('#content').append("div").attr('id', 'InterestChartContainer');
+d3.select('#tab3').append("div").attr('id', 'PriceChartContainer3');
+d3.select('#tab3').append("div").attr('id', 'VolumeChartContainer3');
+d3.select('#tab3').append("div").attr('id', 'InterestChartContainer3');
 
 // set sizes
 var margin = {top: 50, right: 50, bottom: 50, left: 50},
     width = 900 - margin.left - margin.right,
-    height1 = 350 - margin.top - margin.bottom;
-    height2 = 150 - margin.top - margin.bottom;
+    height1 = 300 - margin.top - margin.bottom,
+    height2 = 150 - margin.top - margin.bottom,
     height3 = 150 - margin.top - margin.bottom;
 
 // set formats
@@ -27,7 +28,7 @@ var parseDate = d3.time.format("%x").parse,
     formatDate = d3.time.format("%b-%Y"),
     formatDate2 = d3.time.format("%x"),
     bisectDate = d3.bisector(function(d) { return d.date; }).left,
-    formatWithCommas = d3.format("0,000")
+    formatWithCommas = d3.format("0,000"),
     formatValue = d3.format(",.2f"),
     formatCurrency = function(d) { return "$" + formatValue(d); };
 
@@ -51,16 +52,16 @@ function customAxis(g) {
      g.selectAll("text")
       .attr("x", -50)
       .attr("dy", 0);
-}
+};
 
 // create line elements
 line1 = d3.svg.line()
   .x(function(d) { return (x_time(d.date) + center_adj) })
-  .y(function(d) { return y_price(d.price) })
+  .y(function(d) { return y_price(d.price) });
 
 line2 = d3.svg.line()
   .x(function(d) { return (x_time(d.date) + center_adj) })
-  .y(function(d) { return y_volume(d.volume) })
+  .y(function(d) { return y_volume(d.volume) });
   
 line3 = d3.svg.line()
   .x(function(d) { return (x_time(d.date) + center_adj) })
@@ -73,19 +74,19 @@ interestColors = d3.scale.category20b();
 contractColors = d3.scale.category10();
 
 // create svg elements and bind them to their respective divs
-svgPriceChart = d3.select("#PriceChartContainer").append("svg")
+svgPriceChart = d3.select("#PriceChartContainer3").append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height1 + margin.top + margin.bottom)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-svgVolumeChart = d3.select("#VolumeChartContainer").append("svg")
+svgVolumeChart = d3.select("#VolumeChartContainer3").append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height2 + margin.top + margin.bottom)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-svgInterestChart = d3.select("#InterestChartContainer").append("svg")
+svgInterestChart = d3.select("#InterestChartContainer3").append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height3 + margin.top + margin.bottom)
       .append("g")
@@ -93,52 +94,66 @@ svgInterestChart = d3.select("#InterestChartContainer").append("svg")
 
 
 // read & bind data
-data = csv_data
+plot_data = csv_data;
 
   // choose which variables to plot
-  priceColors.domain(d3.keys(data[0]).filter(function(key) {
+  priceColors.domain(d3.keys(plot_data[0]).filter(function(key) {
     return key.indexOf("close_price") >= 0;
   }));
   
-  volumeColors.domain(d3.keys(data[0]).filter(function(key) {
+  volumeColors.domain(d3.keys(plot_data[0]).filter(function(key) {
     return key.indexOf("volume") >= 0;
   }));
   
-  interestColors.domain(d3.keys(data[0]).filter(function(key) {
+  interestColors.domain(d3.keys(plot_data[0]).filter(function(key) {
     return key.indexOf("interest") >= 0;
   }));
   
-  data.forEach(function(d) {
-    d.delivery_date = parseDate(d.delivery_date)
-    d.trade_date = parseDate(d.trade_date)
+  console.log("d3.keys(plot_data[0]) = " + d3.keys(plot_data[0]));
+  console.log("plot_data[1].delivery_date = " + plot_data[1].delivery_date);
+  if (jQuery.type(plot_data[0].delivery_date) != 'date'){
+    plot_data.forEach(function(d) {
+//     d.delivery_date = parseDate(d.delivery_date)
+//     d.trade_date = parseDate(d.trade_date)
     d.open_price = +d.open_price;
     d.high_price = +d.high_price;
     d.low_price = +d.low_price;
     d.close_price = +d.close_price;
     d.volume = +d.volume;
     d.interest = +d.interest;
-  });
+  })
+  };
 
-  corn = data;
-
+  corn = plot_data;
+  
   // populate trade dates
-  var contracts = d3.set(corn.map(function(d) { return d.trade_date })).values();
-  var earliest = d3.min(contracts)
+  var contracts = corn.map(function(d) { return d.trade_date; });
+  var earliest = d3.min(contracts);
+  var latest = d3.max(contracts);
+  if (date = parseDate('01/01/1900')) {
+     date = earliest
+  };
+  
+  // initialize datepicker 
+  $( "#datepicker" ).datepicker().datepicker({
+      "minDate": earliest,
+      "maxDate": latest,
+      "defaultDate": date,
+      "setDate": date
+    });
+  $('#datepicker').datepicker().datepicker('setDate', formatDate2(new Date(date))) ;
+  
+  tradeDateLabel.hidden = false
+  datepicker.hidden = false
+  console.log(': in datepicker, correct date should be showing')
   console.log(': earliest = ' + earliest + '.')
-  var sel = document.getElementById('selectContract');
-  for(var i = 0; i < contracts.length; i++) {
-    var opt = document.createElement('option');
-    opt.innerHTML = contracts[i];
-    opt.value = contracts[i];
-    opt.text = formatDate2(new Date(contracts[i]))
-    sel.appendChild(opt);
-  }
-  sel.value = earliest
+  console.log(': latest = ' + latest + '.')
     
   // subset data by trade_date
-  contract_data = data.filter(function(d) { return d.trade_date == earliest });
-  num_contracts = d3.set(contract_data.map(function(d) { return d.delivery_date; })).values().length
+  contract_data = plot_data.filter(function(d) { return formatDate2(new Date(d.trade_date)) == formatDate2(new Date(date)); });
+  num_contracts = contract_data.map(function(d) { return d.delivery_date; }).length;
   center_adj = width/2/(num_contracts)
+  console.log('num_contracts = ' + num_contracts)
   
   prices = priceColors.domain().map(function(name) {
     return {

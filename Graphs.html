@@ -22,7 +22,11 @@
 <script src="IndContractChart.js"></script>
 <script src="IndContractChart.eventHandler.js"></script>
 <script src="IndContractChart.d3.legend.js"></script>
-<!--<script src="biz_main_IndContractChart.js"></script>-->
+<script src="biz_main_IndContractChart.js"></script>
+
+<script src="OneDayChart.js"></script>
+<script src="OneDayChart.eventHandler.js"></script>
+<script src="biz_main_OneDayChart.js"></script>
 
 <script>
 	$(function() {
@@ -42,9 +46,11 @@
 
 		<ul>
 			<li><a href="index.html">home</a></li>
-            <li class="selected"><a href="Graphs.html">Visualization</a></li>
+            <li class="selected"><a href="Graphs.html">Charts</a></li>
+<!-- 
             <li><a href="IndContractChart.html">Individual Contract Chart</a></li>
 			<li><a href="OneDayChart.html">One Day Chart</a></li>
+ -->
 			<li><a href="contact.html">contact</a></li>
 		</ul>
 	</div>
@@ -102,15 +108,15 @@
 		<div id="content" class="column-right">
 			<div id="tabs">
   			<ul>
-    			<li><a href="#tab1">Main Graph</a></li>
-    			<li><a href="#tab2">Contract Graph</a></li>
-    			<li><a href="#tab3">One-day Graph</a></li>
+    			<li><a href="#tab1" id = tab1Label>Main Chart</a></li>
+    			<li><a href="#tab2" id = tab2Label>Contract Chart</a></li>
+    			<li><a href="#tab3" id = tab3Label>One-Day Chart</a></li>
   			</ul>
 
 				<!-- commodity chart viz elements -->
 				<div id="tab1">
 					<div id="dateSlider"></div>
-					<label for="price">Select a price</label>
+					<label for="price">Select a price: </label>
 					<select id="price" onchange = "newPriceFunc()">
 			  		<option value="close">Close</option>
 			  		<option value="open">Open</option>
@@ -121,18 +127,20 @@
 
 				<!-- contract chart viz elements -->
 				<div id="tab2">
-					<label  id = "tradeDateLabel"> Contract Delivery Month: </label>
-			    <select  id = "selectContract" onchange = "newContractFunc();"></select>
-			    <div id = "PriceChartContainer"></div>
-			    <div id = "VolumeChartContainer"></div>
-			    <div id = "InterestChartContainer"></div>
-  			</div>
+					<label id = "deliveryDateLabel"> Contract Delivery Month: </label>
+			        <select id = "selectContract" onchange = "newContractFunc();"></select>
+			        <div id = "PriceChartContainer2"></div>
+			        <div id = "VolumeChartContainer2"></div>
+			        <div id = "InterestChartContainer2"></div>
+  			    </div>
 
 				<!-- one-day chart viz elements -->
 				<div id="tab3">
-
-  			</div>
-
+		            <p id = "tradeDateLabel">Trade Date: <input hidden type="text" id="datepicker"></p>   
+		            <div id = "PriceChartContainer3"></div>
+		            <div id = "VolumeChartContainer3"></div>
+		            <div id = "InterestChartContainer3"></div> 
+  			    </div>
 			</div>
 		</div>
 	</div>
@@ -157,10 +165,20 @@
 <script>
 ////////////////////////// global variables ////////////////////////
 var svg = d3.select('#tab1').append("svg").attr('id', 'voronoi');
-var parseDate = d3.time.format("%m/%d/%Y").parse;
+var width = 800;
+var parseDate = d3.time.format("%m/%d/%Y").parse,
+    formatDate = d3.time.format("%b-%Y"),
+    formatDate2 = d3.time.format("%x"),
+    bisectDate = d3.bisector(function(d) { return d.date; }).left,
+    formatWithCommas = d3.format("0,000")
+    formatValue = d3.format(",.2f"),
+    formatCurrency = function(d) { return "$" + formatValue(d); };
 var header = 'contract,delivery_date,trade_date,open_price,high_price,low_price,close_price,volume,interest';
 var data = {'init':null};
-var plot_data, highlight_contract, commodity, isSingleClicked = false;
+var plot_data, highlight_contract, isSingleClicked = false;
+var commodity = 'corn'
+var main_trade_date = parseDate('01/01/1900')
+var main_delivery_date = parseDate('01/01/1900')
 var highlight_line, selected_label;
 var DELAY = 330, clicks = 0, timer = null;
 var width = 750;
@@ -176,14 +194,14 @@ var fileName = {'canola':'canola_sorted_1980-2017.csv',
                 'oats':'oats_sorted_1960-2016.csv',
                 'orange juice':'orange_juice_sorted_1967-2017.csv',
                 'sugar':'sugar_no11_sorted_1968-2018.csv',
-							  'crude oil':'crude_oil_sorted_1983-2022.csv',
-								'heating oil':'heating_oil_sorted_1980-2018.csv',
-								'gold':'gold_sorted_1975-2019.csv',
-								'palladium':'palladium_sorted_1977-2015.csv',
-								'silver':'silver_sorted_1964-2018.csv',
-								'platinum':'platinum_sorted_1970-2015.csv',
-								'fedder cattle':'feeder_cattle_sorted_1974-2016.csv',
-								'live hogs':'lean_hogs_sorted_1970-2016.csv'};
+				'crude oil':'crude_oil_sorted_1983-2022.csv',
+				'heating oil':'heating_oil_sorted_1980-2018.csv',
+				'gold':'gold_sorted_1975-2019.csv',
+				'palladium':'palladium_sorted_1977-2015.csv',
+				'silver':'silver_sorted_1964-2018.csv',
+				'platinum':'platinum_sorted_1970-2015.csv',
+				'fedder cattle':'feeder_cattle_sorted_1974-2016.csv',
+				'live hogs':'lean_hogs_sorted_1970-2016.csv'};
 
 ////////////////////////// global variables ////////////////////////
 
@@ -212,7 +230,33 @@ function newPriceFunc() {
   console.log(timestamp() + ': plot ' + $('#price').val());
   refreshChart();
 };
+
+$(function() {
+    $( "#datepicker" ).datepicker({
+      dateFormat: "mm/dd/yy",
+      appendText: "(mm/dd/yyyy)",
+      altField: "#selectedValue",
+      altFormat: "mm/dd/yyyy",
+      changeMonth:true,
+      changeYear:true,
+      constrainInput: true,
+      gotoCurrent: true,
+      numberOfMonths: 1,
+      selectOtherMonths: true,
+      showOtherMonths: true,
+      showAnim: "slideDown",
+      stepMonths: 1,
+      onSelect: function (date) {
+            refreshData3(commodity, parseDate(date));
+        }
+    })
+  });
 ////////////////////////// event handlers ////////////////////////
+////////////////////////// load initial data ////////////////////////
+refreshData();
+////////////////////////// load initial data ////////////////////////
+
+
 
 </script>
 

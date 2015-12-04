@@ -1,6 +1,6 @@
 
 // refresh data based on UI values
-function refreshData(commodity) {
+function refreshData2(commodity, date) {
   var file = fileName[commodity];
   if (file == null) {
       alert('Raw data not found for ' + commodity);
@@ -25,7 +25,7 @@ function refreshData(commodity) {
       console.log(': data[commodity] load completed for ' + commodity + ' with ' + data[commodity].length + ' rows.');
 	  $("body").css("cursor", "default");
 	  
-	  refreshChart(data[commodity]);
+	  refreshChart2(data[commodity], date);
     })
     }
     catch(err) {
@@ -34,16 +34,16 @@ function refreshData(commodity) {
   }
   else {
      console.log('data[commodity] already exists.  in else statement.');
-     refreshChart(data[commodity]);
+     refreshIndContractChart(data[commodity], date);
   };
 }
 
 // refresh chart for the new context
-function refreshChart(csv_data) {
+function refreshIndContractChart(csv_data, date) {
   if (data[commodity].length == 0) {
     return;
   };
 
-  plot_IndContractChart(csv_data);
+  plot_IndContractChart(csv_data, date);
 
 }

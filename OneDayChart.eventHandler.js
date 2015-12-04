@@ -1,11 +1,13 @@
 // event handler for dropdown selection change
 function newContractFunc() {
-    var selectBox = document.getElementById("selectContract");
-    if (selectBox.selectedIndex < 0) return;
-    var selectedValue = selectBox.options[selectBox.selectedIndex].value;
-    
-    contract_data = corn.filter(function(d) { return d.trade_date == selectedValue });
+//     var datePicker = document.getElementById("selectContract");
+//     if (selectBox.selectedIndex < 0) return;
+//     var selectedValue(id = "selectedValue") // = selectBox.options[selectBox.selectedIndex].value;
+    var selectedValue = $( "datapicker" ).datepicker().datepicker( "getDate" );
+    contract_data = data.filter(function(d) { return d.trade_date == selectedValue });
     num_contracts = d3.set(contract_data.map(function(d) { return d.delivery_date; })).values().length
+    console.log('selectedValue = ' + selectedValue);
+    console.log('num_contracts = ' + num_contracts);
     center_adj = width/2/num_contracts
     
     function customAxis(g) {
