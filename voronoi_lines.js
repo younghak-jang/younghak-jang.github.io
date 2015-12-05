@@ -139,6 +139,7 @@ function plot_voronoi(price) {
   var bisectData = d3.bisector(function(d) { return d.date; }).left;
   function mouseover(d) {
     if (!isSingleClicked) {
+      // contract highlight model
       highlight_line = d;
       highlight_contract = d.city.name;
       contract_date = contract2date(d.city.name);
@@ -147,7 +148,7 @@ function plot_voronoi(price) {
       focus.attr("transform", "translate(" + x(d.date) + "," + y(d.value) + ")");
       focus.select("text").text(d.city.name).attr("transform", "translate(0,0)");
     } else {
-      // only move focus point
+      // lock mode: only move focus point
       var x0 = x.invert(d3.mouse(this)[0]),
         i = bisectData(highlight_line.city.values, x0, 1),
         d0 = highlight_line.city.values[i - 1],
@@ -157,8 +158,9 @@ function plot_voronoi(price) {
       focus.attr("transform", "translate(" + x(ds.date) + "," + y(ds.value) + ")");
       focus.select("text").text(contract2deliver(ds.city.name) + ' - '
           + ds.date.getFullYear() + '/' + ds.date.getMonth() + '/' + ds.date.getDay() + ': $' + ds.value)
-        .attr("transform", "translate(0," + (0-y(ds.value)) + ")")
-        .attr('align', 'left');
+        .attr("transform", "translate(0," + (3-y(ds.value)) + ")")
+        .attr('font-size', '13')
+        .attr('stroke', 'red');
     }
   }
 
