@@ -171,8 +171,7 @@ var header = 'contract,delivery_date,trade_date,open_price,high_price,low_price,
 var data = {'init':null};
 var main_plot_data, highlight_contract, isSingleClicked = false;
 var commodity = 'corn'
-var main_trade_date = parseDate('01/01/1900')
-var main_delivery_date = parseDate('01/01/1900')
+var one_day_date = null;
 var highlight_line, selected_label;
 var DELAY = 330, clicks = 0, timer = null;
 var width = 750;
@@ -241,13 +240,13 @@ $(function() {
       showAnim: "slideDown",
       stepMonths: 1,
       onSelect: function (date) {
-// changed by MO            refreshData3(commodity, parse(date));
-          plot_OneDayChart(parseDate(date));
-// changed by MO
+				one_day_date = parseDate(date);
+      	plot_OneDayChart();
       }
     })
   });
 ////////////////////////// event handlers ////////////////////////
+
 ////////////////////////// load initial data ////////////////////////
 clickCommodity($('#init')[0]);
 ////////////////////////// load initial data ////////////////////////

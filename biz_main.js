@@ -97,5 +97,5 @@ function refreshChart3() {
     console.log(':data[commodity] is empty')
     return;
   }
-  plot_OneDayChart(main_trade_date)
+  plot_OneDayChart()
 }

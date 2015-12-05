@@ -111,7 +111,9 @@ function mousemove() {
   		d0 = contract_data[i - 1],
 	    d1 = contract_data[i],
 		d = (x0 - d0.trade_date) > (d1.trade_date - x0) ? d1 : d0;
-  temp_x=x0;
+
+  // update date for one-day Chart
+  one_day_date = d.trade_date;
 
   labels11.text(formatDate2(d.trade_date) + ":")
          .attr("transform", "translate(" + (x_time(x0)) + ", -5)")

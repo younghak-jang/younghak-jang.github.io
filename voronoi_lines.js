@@ -58,17 +58,10 @@ function plot_voronoi(price) {
           } else {
 
               clearTimeout(timer);  //prevent single-click action
-
               console.log(highlight_contract + ' Double Click');  //perform double-click action
-
               clicks = 0;  //after action performed, reset counter
-              if (isSingleClicked) {
-                $('#tab3').select('p').text('One-day chart of ' + commodity + ', ' + highlight_contract + ' will show up here.' )
-                $( "#tabs" ).tabs( "option", "active", 2 );
-              } else {
-                plot_IndContractChart();
-                $( "#tabs" ).tabs( "option", "active", 1 );
-              }
+              plot_IndContractChart();
+              $( "#tabs" ).tabs( "option", "active", 1 );
           }
 
       })

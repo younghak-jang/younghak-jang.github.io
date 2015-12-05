@@ -13,6 +13,38 @@ d3.select('#tab2').append("div").attr('id', 'PriceChartContainer2');
 d3.select('#tab2').append("div").attr('id', 'VolumeChartContainer2');
 d3.select('#tab2').append("div").attr('id', 'InterestChartContainer2');
 
+// click handler - single vs. double
+$("#PriceChartContainer2")
+    .bind("click", function(e){
+
+        clicks++;  //count clicks
+
+        if(clicks === 1) {
+
+            timer = setTimeout(function() {
+                isSingleClicked = !isSingleClicked;
+                console.log(highlight_contract + ' is locked: ' + isSingleClicked); //perform single-click action
+
+                clicks = 0;  //after action performed, reset counter
+
+                console.log(one_day_date.toDateString() + ' single click, do nothing.');  //perform double-click action
+
+            }, DELAY);
+
+        } else {
+
+            clearTimeout(timer);  //prevent single-click action
+            console.log(one_day_date.toDateString() + ' double click');  //perform double-click action
+            clicks = 0;  //after action performed, reset counter
+            plot_OneDayChart();
+            $( "#tabs" ).tabs( "option", "active", 2 );
+        }
+
+    })
+    .bind("dblclick", function(e){
+        e.preventDefault();  //cancel system double-click event
+    });
+
 // set sizes
 var margin = {top: 50, right: 250, bottom: 50, left: 100},
     width = 1100 - margin.left - margin.right,
@@ -105,21 +137,6 @@ var commodity_data = data[commodity];
   interestColors.domain(d3.keys(commodity_data[0]).filter(function(key) {
     return key.indexOf("interest") >= 0;
   }));
-/*
-  if (jQuery.type(data[0].delivery_date) != 'date'){
-  data.forEach(function(d) {
-    d.delivery_date = parseDate(d.delivery_date)
-    d.trade_date = parseDate(d.trade_date)
-    d.open_price = +d.open_price;
-    d.high_price = +d.high_price;
-    d.low_price = +d.low_price;
-    d.close_price = +d.close_price;
-    d.volume = +d.volume;
-    d.interest = +d.interest;
-  });
-  }
-*/
-  //corn = commodity_data; // the handler needs this, don't make it private
 
   // populate contracts
   var contracts = d3.set(commodity_data.map(function(d) { return d.delivery_date })).values();

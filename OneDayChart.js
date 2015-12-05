@@ -1,8 +1,8 @@
 
-function plot_OneDayChart(plot_date3) {
+function plot_OneDayChart() {
 
   console.log(': start plotting one-day chart ...');
-  console.log(': plot_date3 = ' + plot_date3);
+  console.log(': one_day_date = ' + one_day_date);
   $("body").css("cursor", "progress");
 
 
@@ -114,24 +114,25 @@ var plot_data3 = data[commodity];
   var earliest = d3.min(contracts);
   var latest = d3.max(contracts);
 
-  if (plot_date3 <= parseDate('01/02/1900')) {
-           plot_date3 = earliest;
-  };
+  if (one_day_date == null) {
+    one_day_date = earliest;
+  }
   console.log(':earliest = ' + earliest);
   console.log(':latest = ' + latest);
-  console.log(':plot_date3 = ' + plot_date3);
+  console.log(':one_day_date = ' + one_day_date);
 
   // initialize datepicker
   $( "#datepicker" ).datepicker( "option", "minDate", formatDate2(earliest) );
   $( "#datepicker" ).datepicker( "option", "maxDate", formatDate2(latest) );
-  $( "#datepicker" ).datepicker( "option", "defaultDate", formatDate2(plot_date3) );
-  $('#datepicker').datepicker().datepicker('setDate', formatDate2(plot_date3)) ;
+  $( "#datepicker" ).datepicker( "option", "defaultDate", formatDate2(one_day_date) );
+  $( "#datepicker" ).datepicker().datepicker('setDate', formatDate2(one_day_date)) ;
 
   tradeDateLabel.hidden = false
   datepicker.hidden = false
 
   // subset data by trade_date
-  var contract_data3 = plot_data3.filter(function(d) { return formatDate2(new Date(d.trade_date)) == formatDate2(new Date(plot_date3)); });
+  var sDate = one_day_date.toDateString();
+  var contract_data3 = plot_data3.filter(function(d) { return d.trade_date.toDateString() == sDate; });
   var num_contracts = contract_data3.map(function(d) { return d.delivery_date; }).length;
   var center_adj = width/2/(num_contracts)
   console.log('num_contracts = ' + num_contracts)
