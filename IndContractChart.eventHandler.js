@@ -3,8 +3,12 @@ function newContractFunc() {
     var selectBox = document.getElementById("selectContract");
     if (selectBox.selectedIndex < 0) return;
     var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+    updateContractChart(new Date(selectedValue).toDateString());
+}
 
-    contract_data = data[commodity].filter(function(d) { return d.delivery_date == selectedValue });
+function updateContractChart(contract_chart_date) {
+    // NOTE: contract_chart_date is in string format with toDateString() conversion
+    contract_data = data[commodity].filter(function(d) { return d.delivery_date.toDateString() == contract_chart_date });
     num_contracts = d3.set(contract_data.map(function(d) { return d.trade_date; })).values().length
     center_adj = width/2/num_contracts
 

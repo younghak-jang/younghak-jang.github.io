@@ -60,8 +60,14 @@ function plot_voronoi(price) {
               clearTimeout(timer);  //prevent single-click action
               console.log(highlight_contract + ' Double Click');  //perform double-click action
               clicks = 0;  //after action performed, reset counter
-              plot_IndContractChart();
               $( "#tabs" ).tabs( "option", "active", 1 );
+              var clicked = $('#selectContract option').filter(function() {
+                return $(this).text() == months[contract_date.getMonth()] + '-' + contract_date.getFullYear();
+              });
+              if (clicked.length > 0) {
+                $('#selectContract')[0].selectedIndex = $('#selectContract option').index(clicked[0]);
+              }
+              updateContractChart(contract_date.toDateString())
           }
 
       })
@@ -173,7 +179,7 @@ function plot_voronoi(price) {
   function contract2deliver(contract) {
     var d_date = contract2date(contract);
     if (jQuery.type(d_date)!='date') return contract;
-    return months[d_date.getMonth()-1] + '-' + d_date.getFullYear();
+    return months[d_date.getMonth()] + '-' + d_date.getFullYear();
   }
 
   function mouseout(d) {
