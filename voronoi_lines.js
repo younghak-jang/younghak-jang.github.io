@@ -135,6 +135,7 @@ function plot_voronoi(price) {
     if (!isSingleClicked) {
       highlight_line = d;
       highlight_contract = d.city.name;
+      contract_date = contract2date(d.city.name);
       d3.select(d.city.line).classed("city--hover", true);
       d.city.line.parentNode.appendChild(d.city.line);
       focus.attr("transform", "translate(" + x(d.date) + "," + y(d.value) + ")");
