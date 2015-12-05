@@ -165,10 +165,10 @@ function plot_voronoi(price) {
   var cParse = d3.time.format("%Y-%B");
   var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
   function contract2date(contract) {
-    if (contract.length != 4) return contract;
-    var month = monthCode[contract[3]];
+    if (contract.length < 3) return contract;
+    var month = monthCode[contract[contract.length-1]];
     if (month == null) return contract;
-    var year = contract.slice(1,3);
+    var year = contract.slice(contract.length-3,contract.length-1);
     if (isNaN(parseInt(year))) return contract;
     year = parseInt(year)>18? "19"+year : "20"+year;
     var rtn = cParse.parse(year.toString() + '-' + month);
