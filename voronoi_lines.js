@@ -5,8 +5,8 @@ function plot_voronoi(price) {
   console.log(timestamp() + ': start plotting ...');
   $("body").css("cursor", "progress");
   var highlight_contract,
-    dayFormat = d3.time.format("%m/%d/%Y").parse;
-    isSingleClicked = false;
+      dayFormat = d3.time.format("%m/%d/%Y").parse,
+  isSingleClicked = false;
 
  var margin = {top: 20, right: 30, bottom: 30, left: 40},
   	width = 960 - margin.left - margin.right,
@@ -148,11 +148,31 @@ function plot_voronoi(price) {
       if (d1 == null) return;
 			var ds = (x0 - d0.date) > (d1.date - x0) ? d1 : d0;
       focus.attr("transform", "translate(" + x(ds.date) + "," + y(ds.value) + ")");
-      focus.select("text").text(ds.city.name + ' - '
+      focus.select("text").text(contract2deliver(ds.city.name) + ' - '
           + ds.date.getFullYear() + '/' + ds.date.getMonth() + '/' + ds.date.getDay() + ': $' + ds.value)
         .attr("transform", "translate(0," + (0-y(ds.value)) + ")")
         .attr('align', 'left');
     }
+  }
+
+  var cParse = d3.time.format("%Y-%B");
+  var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+  function contract2date(contract) {
+    if (contract.length != 4) return contract;
+    var month = monthCode[contract[3]];
+    if (month == null) return contract;
+    var year = contract.slice(1,3);
+    if (isNaN(parseInt(year))) return contract;
+    year = parseInt(year)>18? "19"+year : "20"+year;
+    var rtn = cParse.parse(year.toString() + '-' + month);
+    if (rtn == null) return contract;
+    return rtn;
+  }
+
+  function contract2deliver(contract) {
+    var d_date = contract2date(contract);
+    if (jQuery.type(d_date)!='date') return contract;
+    return months[d_date.getMonth()-1] + '-' + d_date.getFullYear();
   }
 
   function mouseout(d) {

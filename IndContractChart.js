@@ -21,14 +21,9 @@ $("#PriceChartContainer2")
 
         if(clicks === 1) {
 
-            timer = setTimeout(function() {
-                isSingleClicked = !isSingleClicked;
-                console.log(highlight_contract + ' is locked: ' + isSingleClicked); //perform single-click action
-
+            timer = setTimeout(function() {                
                 clicks = 0;  //after action performed, reset counter
-
                 console.log(one_day_date.toDateString() + ' single click, do nothing.');  //perform double-click action
-
             }, DELAY);
 
         } else {

@@ -169,7 +169,7 @@ var parseDate = d3.time.format("%m/%d/%Y").parse,
     formatCurrency = function(d) { return "$" + formatValue(d); };
 var header = 'contract,delivery_date,trade_date,open_price,high_price,low_price,close_price,volume,interest';
 var data = {'init':null};
-var main_plot_data, highlight_contract, isSingleClicked = false;
+var main_plot_data; //isSingleClicked = false;
 var commodity = 'corn'
 var one_day_date = null;
 var highlight_line, selected_label;
@@ -195,6 +195,19 @@ var fileName = {'canola':'canola_sorted_1980-2017.csv',
 				'platinum':'platinum_sorted_1970-2015.csv',
 				'fedder cattle':'feeder_cattle_sorted_1974-2016.csv',
 				'live hogs':'lean_hogs_sorted_1970-2016.csv'};
+				
+var monthCode = {'F':'January',
+'G':'February',
+'H':'March',
+'J':'April',
+'K':'May',
+'M':'June',
+'N':'July',
+'Q':'August',
+'U':'September',
+'V':'October',
+'X':'November',
+'Z':'December'}
 
 ////////////////////////// global variables ////////////////////////
 
