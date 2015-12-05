@@ -157,7 +157,7 @@ function plot_voronoi(price) {
 			var ds = (x0 - d0.date) > (d1.date - x0) ? d1 : d0;
       focus.attr("transform", "translate(" + x(ds.date) + "," + y(ds.value) + ")");
       focus.select("text").text(contract2deliver(ds.city.name) + ' - '
-          + ds.date.getFullYear() + '/' + ds.date.getMonth() + '/' + ds.date.getDay() + ': $' + ds.value)
+          + ds.date.getFullYear() + '/' + (ds.date.getMonth()+1) + '/' + ds.date.getDay() + ': $' + ds.value)
         .attr("transform", "translate(0," + (3-y(ds.value)) + ")")
         .attr('font-size', '13')
         .attr('stroke', 'red');
