@@ -4,7 +4,7 @@ function plot_OneDayChart(csv_data, plot_date3) {
   console.log(': start plotting one-day chart ...');
   console.log(': plot_date3 = ' + plot_date3);
   $("body").css("cursor", "progress");
-  
+
 
 // d3.select('#SelectBoxContainer').remove()
 d3.select('#PriceChartContainer3').remove();
@@ -34,19 +34,19 @@ var parseDate = d3.time.format("%x").parse,
 
 // set scales
 // x_time = d3.scale.ordinal().rangePoints([0, width])
-x_time = d3.scale.ordinal().rangeRoundBands([0, width]);
-y_price = d3.scale.linear().range([height1, 0]);
-y_volume = d3.scale.linear().range([height2, 0]);
-y_interest = d3.scale.linear().range([height3, 0]);
+var x_time = d3.scale.ordinal().rangeRoundBands([0, width]);
+var y_price = d3.scale.linear().range([height1, 0]);
+var y_volume = d3.scale.linear().range([height2, 0]);
+var y_interest = d3.scale.linear().range([height3, 0]);
 
 
 // create axes
-xAxis1 = d3.svg.axis().scale(x_time).orient("bottom").tickFormat(function (d) { return formatDate(new Date(d)); });
-xAxis2 = d3.svg.axis().scale(x_time).orient("bottom").tickFormat(function (d) { return formatDate(new Date(d)); });
-xAxis3 = d3.svg.axis().scale(x_time).orient("bottom").tickFormat(function (d) { return formatDate(new Date(d)); });
-yAxis1 = d3.svg.axis().scale(y_price).orient("right").ticks(5).tickSize(width).outerTickSize(0).tickFormat( function (d) { return formatValue(d) ;});
-yAxis2 = d3.svg.axis().scale(y_volume).orient("left").ticks(3).outerTickSize(0);
-yAxis3 = d3.svg.axis().scale(y_interest).orient("left").ticks(3).outerTickSize(0);
+var xAxis1 = d3.svg.axis().scale(x_time).orient("bottom").tickFormat(function (d) { return formatDate(new Date(d)); });
+var xAxis2 = d3.svg.axis().scale(x_time).orient("bottom").tickFormat(function (d) { return formatDate(new Date(d)); });
+var xAxis3 = d3.svg.axis().scale(x_time).orient("bottom").tickFormat(function (d) { return formatDate(new Date(d)); });
+var yAxis1 = d3.svg.axis().scale(y_price).orient("right").ticks(5).tickSize(width).outerTickSize(0).tickFormat( function (d) { return formatValue(d) ;});
+var yAxis2 = d3.svg.axis().scale(y_volume).orient("left").ticks(3).outerTickSize(0);
+var yAxis3 = d3.svg.axis().scale(y_interest).orient("left").ticks(3).outerTickSize(0);
 
 function customAxis(g) {
      g.selectAll("text")
@@ -55,38 +55,38 @@ function customAxis(g) {
 };
 
 // create line elements
-line1 = d3.svg.line()
+var line1 = d3.svg.line()
   .x(function(d) { return (x_time(d.date) + center_adj) })
   .y(function(d) { return y_price(d.price) });
 
-line2 = d3.svg.line()
+var line2 = d3.svg.line()
   .x(function(d) { return (x_time(d.date) + center_adj) })
   .y(function(d) { return y_volume(d.volume) });
-  
-line3 = d3.svg.line()
+
+var line3 = d3.svg.line()
   .x(function(d) { return (x_time(d.date) + center_adj) })
   .y(function(d) { return y_interest(d.interest) });
 
 // set color scales
-priceColors = d3.scale.category10();
-volumeColors = d3.scale.category20c();
-interestColors = d3.scale.category20b();
-contractColors = d3.scale.category10();
+var priceColors = d3.scale.category10();
+var volumeColors = d3.scale.category20c();
+var interestColors = d3.scale.category20b();
+var contractColors = d3.scale.category10();
 
 // create svg elements and bind them to their respective divs
-svgPriceChart = d3.select("#PriceChartContainer3").append("svg")
+var svgPriceChart = d3.select("#PriceChartContainer3").append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height1 + margin.top + margin.bottom)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-svgVolumeChart = d3.select("#VolumeChartContainer3").append("svg")
+var svgVolumeChart = d3.select("#VolumeChartContainer3").append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height2 + margin.top + margin.bottom)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-svgInterestChart = d3.select("#InterestChartContainer3").append("svg")
+var svgInterestChart = d3.select("#InterestChartContainer3").append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height3 + margin.top + margin.bottom)
       .append("g")
@@ -100,15 +100,15 @@ plot_data3 = csv_data;
   priceColors.domain(d3.keys(plot_data3[0]).filter(function(key) {
     return key.indexOf("close_price") >= 0;
   }));
-  
+
   volumeColors.domain(d3.keys(plot_data3[0]).filter(function(key) {
     return key.indexOf("volume") >= 0;
   }));
-  
+
   interestColors.domain(d3.keys(plot_data3[0]).filter(function(key) {
     return key.indexOf("interest") >= 0;
   }));
-  
+
 //   if (jQuery.type(plot_data[0].delivery_date) != 'date'){
 //     plot_data.forEach(function(d) {
 //     d.delivery_date = parseDate(d.delivery_date)
@@ -123,34 +123,34 @@ plot_data3 = csv_data;
 //   };
 
   corn = plot_data3;
-  
+
   // populate trade dates
   var contracts = corn.map(function(d) { return d.trade_date; });
   var earliest = d3.min(contracts);
   var latest = d3.max(contracts);
-  
+
   if (plot_date3 <= parseDate('01/02/1900')) {
            plot_date3 = earliest;
   };
   console.log(':earliest = ' + earliest);
   console.log(':latest = ' + latest);
   console.log(':plot_date3 = ' + plot_date3);
-  
-  // initialize datepicker 
+
+  // initialize datepicker
   $( "#datepicker" ).datepicker( "option", "minDate", formatDate2(earliest) );
   $( "#datepicker" ).datepicker( "option", "maxDate", formatDate2(latest) );
   $( "#datepicker" ).datepicker( "option", "defaultDate", formatDate2(plot_date3) );
   $('#datepicker').datepicker().datepicker('setDate', formatDate2(plot_date3)) ;
-    
+
   tradeDateLabel.hidden = false
   datepicker.hidden = false
-    
+
   // subset data by trade_date
   contract_data = plot_data3.filter(function(d) { return formatDate2(new Date(d.trade_date)) == formatDate2(new Date(plot_date3)); });
   num_contracts = contract_data.map(function(d) { return d.delivery_date; }).length;
   center_adj = width/2/(num_contracts)
   console.log('num_contracts = ' + num_contracts)
-  
+
   prices = priceColors.domain().map(function(name) {
     return {
       name: name,
@@ -168,7 +168,7 @@ plot_data3 = csv_data;
       })
     };
   });
-  
+
   interests = interestColors.domain().map(function(name) {
     return {
       name: name,
@@ -188,7 +188,7 @@ plot_data3 = csv_data;
     d3.min(prices.filter(function(d) { return d.name.indexOf('close_price')>=0}), function(c) { return d3.min(c.values, function(v) { return v.price; }); }),
     d3.max(prices.filter(function(d) { return d.name.indexOf('close_price')>=0}), function(c) { return d3.max(c.values, function(v) { return v.price; }); })
   ]);
-  
+
   y_price.domain([y_price.domain()[0], y_price.domain()[1] + (y_price.domain()[1] - y_price.domain()[0])*0.10]);
 
 
@@ -196,22 +196,22 @@ plot_data3 = csv_data;
     d3.min(volumes.filter(function(d) { return d.name.indexOf('volume')>=0}), function(c) { return d3.min(c.values, function(v) { return v.volume; }); }),
     d3.max(volumes.filter(function(d) { return d.name.indexOf('volume')>=0}), function(c) { return d3.max(c.values, function(v) { return v.volume; }); })
   ]);
-  
+
   y_volume.domain([y_volume.domain()[0], y_volume.domain()[1] + (y_volume.domain()[1] - y_volume.domain()[0])*0.10]);
-  
+
   y_interest.domain([
     d3.min(interests.filter(function(d) { return d.name.indexOf('interest')>=0}), function(c) { return d3.min(c.values, function(v) { return v.interest; }); }),
     d3.max(interests.filter(function(d) { return d.name.indexOf('interest')>=0}), function(c) { return d3.max(c.values, function(v) { return v.interest; }); })
   ]);
-  
+
   y_interest.domain([y_interest.domain()[0], y_interest.domain()[1] + (y_interest.domain()[1] - y_interest.domain()[0])*0.10]);
-  
+
   // add axis elements
   svgXAxis1 = svgPriceChart.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height1 + ")")
       .call(xAxis1);
-      
+
   svgYAxis1 = svgPriceChart.append("g")
       .attr("class", "y axis")
       .call(yAxis1)
@@ -221,16 +221,16 @@ plot_data3 = csv_data;
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height2 + ")")
       .call(xAxis2);
-      
+
   svgYAxis2 = svgVolumeChart.append("g")
       .attr("class", "y axis")
       .call(yAxis2);
-  
+
   svgXAxis3 = svgInterestChart.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height3 + ")")
       .call(xAxis3);
- 
+
   svgXAxis3.append("text")
       //.attr("transform", "rotate(-90)")
       .attr("y", 20)
@@ -240,12 +240,12 @@ plot_data3 = csv_data;
       .style("font-size", "14px")
       .style("font-weight", "bold")
       .text("Contract Delivery Month");
- 
+
   svgYAxis3 = svgInterestChart.append("g")
       .attr("class", "y axis")
       .call(yAxis3);
-      
-  // add price chart elements    
+
+  // add price chart elements
   var price = svgPriceChart.selectAll(".price")
       .data(prices)
       .enter().append("g")
@@ -258,7 +258,7 @@ plot_data3 = csv_data;
       .attr('clip-path', 'url(#clip)')
       .style("stroke", function(d) { return priceColors(d.name); })
       .style("stroke-dasharray", ("3, 3"));
-      
+
   priceDots = price.selectAll("circle")
       .data(function (d) { return d.values; })
       .enter().append("path")
@@ -266,7 +266,7 @@ plot_data3 = csv_data;
       .attr("d", d3.svg.symbol())
       .attr("transform", function(d) { return "translate(" + (x_time(d.date) + center_adj) + "," + y_price(d.price) + ")"; })
       .style("fill", function(d) { return contractColors(d.date) });
-        
+
   priceLabels = price.selectAll("text")
         .data(function(d) { return d.values; })
         .enter().append("text")
@@ -275,14 +275,14 @@ plot_data3 = csv_data;
         .attr("x", function(d) { return (x_time(d.date) + center_adj); })
         .attr("y", function(d) { return y_price(d.price) - 7; })
         .attr("text-anchor", "middle");
-        
+
   //add title
   svgPriceChart.append("text")
-        .attr("x", (width / 2))             
+        .attr("x", (width / 2))
         .attr("y", 0 - margin.top/3)
-        .attr("text-anchor", "middle")  
-        .style("font-size", "14px") 
-        .style("font-weight", "bold")  
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
         .text("Close Price ($)");
 
   // add volume chart elements
@@ -290,8 +290,8 @@ plot_data3 = csv_data;
       .data(volumes)
       .enter().append("g")
       .attr("class", "volume");
-      
-      
+
+
   volumeBars =  volume.selectAll("rect")
       .data(function (d) { return d.values; })
       .enter().append("rect")
@@ -310,14 +310,14 @@ plot_data3 = csv_data;
         .attr("font-weight", "bold")
         .attr("x", function(d) { return (x_time(d.date) + center_adj); })
         .attr("y", function(d) { return y_volume(d.volume) - 7; });
-        
+
   //add title
   svgVolumeChart.append("text")
-        .attr("x", (width / 2))             
+        .attr("x", (width / 2))
         .attr("y", 0 - margin.top/3)
-        .attr("text-anchor", "middle")  
-        .style("font-size", "14px") 
-        .style("font-weight", "bold")  
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
         .text("Volume");
 
   // add open interest chart elements
@@ -325,8 +325,8 @@ plot_data3 = csv_data;
       .data(interests)
       .enter().append("g")
       .attr("class", "interest");
-      
-      
+
+
   interestBars =  interest.selectAll("rect")
       .data(function (d) { return d.values; })
       .enter().append("rect")
@@ -345,14 +345,14 @@ plot_data3 = csv_data;
         .attr("font-weight", "bold")
         .attr("x", function(d) { return (x_time(d.date) + center_adj); })
         .attr("y", function(d) { return y_interest(d.interest) - 7; });
-        
+
   //add title
   svgInterestChart.append("text")
-        .attr("x", (width / 2))             
+        .attr("x", (width / 2))
         .attr("y", 0 - margin.top/3)
-        .attr("text-anchor", "middle")  
-        .style("font-size", "14px") 
-        .style("font-weight", "bold")  
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
         .text("Open Interest");
 
 $("body").css("cursor", "default");

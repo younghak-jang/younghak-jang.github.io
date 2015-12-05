@@ -4,8 +4,8 @@ function newContractFunc() {
     if (selectBox.selectedIndex < 0) return;
     var selectedValue = selectBox.options[selectBox.selectedIndex].value;
 
-    contract_data = corn.filter(function(d) { return formatDate2(new Date(d.delivery_date)) == formatDate2(new Date(selectedValue)); });
-    num_contracts = contract_data.map(function(d) { return d.trade_date; }).length
+    contract_data = corn.filter(function(d) { return d.delivery_date == selectedValue });
+    num_contracts = d3.set(contract_data.map(function(d) { return d.trade_date; })).values().length
     center_adj = width/2/num_contracts
 
     function customAxis(g) {
@@ -38,7 +38,6 @@ function newContractFunc() {
 
 
   x_time.domain(d3.extent(contract_data, function(d) { return d.trade_date; }));
-
   y_price.domain([
     d3.min(prices.filter(function(d) { return d.name.indexOf('price')>=0}), function(c) { return d3.min(c.values, function(v) { return v.price; }); }),
     d3.max(prices.filter(function(d) { return d.name.indexOf('price')>=0}), function(c) { return d3.max(c.values, function(v) { return v.price; }); })
@@ -110,9 +109,8 @@ function mousemove() {
 	var x0 = x_time.invert(d3.mouse(this)[0]),
 		i = bisectData(contract_data, x0, 1),
   		d0 = contract_data[i - 1],
-	    d1 = contract_data[i];
-	if (d1 == null) { console.log(':on mousemove d1 is null'); return; };
-	var	d = (x0 - d0.trade_date) > (d1.trade_date - x0) ? d1 : d0;
+	    d1 = contract_data[i],
+		d = (x0 - d0.trade_date) > (d1.trade_date - x0) ? d1 : d0;
   temp_x=x0;
 
   labels11.text(formatDate2(d.trade_date) + ":")

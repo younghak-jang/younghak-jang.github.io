@@ -23,7 +23,7 @@ function refreshData() {
 		    throw error;
 	    }
       var temp = d3.csv.parse(header + '\n' + text);
-      temp.forEach(function(d) {        
+      temp.forEach(function(d) {
         // added by MO
         d.delivery_date = parseDate(d.delivery_date)
         d.trade_date = parseDate(d.trade_date)
@@ -69,7 +69,7 @@ function filterData(com_data) {
   }
   console.log(timestamp() + ': find ' + plot_data.length + ' rows after filtering');
   refreshChart();
-  refreshChart2();
+  //refreshChart2();
   refreshChart3()
 }
 
