@@ -1,5 +1,5 @@
 
-function plot_IndContractChart(csv_data) {
+function plot_IndContractChart() {
 
   console.log(': start plotting ...');
   $("body").css("cursor", "progress");
@@ -91,18 +91,18 @@ svgInterestChart = d3.select("#InterestChartContainer2").append("svg")
 
 
 // read & bind data
-//var data = csv_data
+var commodity_data = data[commodity];
 
 // choose which variables to plot
-  priceColors.domain(d3.keys(csv_data[0]).filter(function(key) {
+  priceColors.domain(d3.keys(commodity_data[0]).filter(function(key) {
     return key.indexOf("price") >= 0;
   }));
 
-  volumeColors.domain(d3.keys(csv_data[0]).filter(function(key) {
+  volumeColors.domain(d3.keys(commodity_data[0]).filter(function(key) {
     return key.indexOf("volume") >= 0;
   }));
 
-  interestColors.domain(d3.keys(csv_data[0]).filter(function(key) {
+  interestColors.domain(d3.keys(commodity_data[0]).filter(function(key) {
     return key.indexOf("interest") >= 0;
   }));
 /*
@@ -119,10 +119,10 @@ svgInterestChart = d3.select("#InterestChartContainer2").append("svg")
   });
   }
 */
-  corn = csv_data; // the handler needs this, don't make it private
+  //corn = commodity_data; // the handler needs this, don't make it private
 
   // populate contracts
-  var contracts = d3.set(corn.map(function(d) { return d.delivery_date })).values();
+  var contracts = d3.set(commodity_data.map(function(d) { return d.delivery_date })).values();
   var earliest = d3.min(contracts)
 
   var sel = document.getElementById('selectContract');
@@ -137,7 +137,7 @@ svgInterestChart = d3.select("#InterestChartContainer2").append("svg")
 
 
     // subset data by delivery_date
-  contract_data = csv_data.filter(function(d) { return d.delivery_date == earliest });
+  contract_data = commodity_data.filter(function(d) { return d.delivery_date == earliest });
   console.log('contract_data[0] = ' + contract_data[0] + '.')
   num_contracts = d3.set(contract_data.map(function(d) { return d.trade_date; })).values().length
   console.log('num_contracts = ' + num_contracts + '.')
@@ -201,15 +201,15 @@ svgInterestChart = d3.select("#InterestChartContainer2").append("svg")
 
   y_interest.domain([y_interest.domain()[0], y_interest.domain()[1] + (y_interest.domain()[1] - y_interest.domain()[0])*0.10]);
 
-  console.log(':data[0].trade_date = ' + csv_data[0].trade_date)
-  vData1 = [{"date":csv_data[0].trade_date, "price": 0},
-            {"date":csv_data[0].trade_date, "price": y_price.domain()[1]}]
+  console.log(':data[0].trade_date = ' + commodity_data[0].trade_date)
+  vData1 = [{"date":commodity_data[0].trade_date, "price": 0},
+            {"date":commodity_data[0].trade_date, "price": y_price.domain()[1]}]
 
-  vData2 = [{"date":csv_data[0].trade_date, "volume": 0},
-            {"date":csv_data[0].trade_date, "volume": y_volume.domain()[1]}]
+  vData2 = [{"date":commodity_data[0].trade_date, "volume": 0},
+            {"date":commodity_data[0].trade_date, "volume": y_volume.domain()[1]}]
 
-  vData3 = [{"date":csv_data[0].trade_date, "interest": 0},
-            {"date":csv_data[0].trade_date, "interest": y_interest.domain()[1]}]
+  vData3 = [{"date":commodity_data[0].trade_date, "interest": 0},
+            {"date":commodity_data[0].trade_date, "interest": y_interest.domain()[1]}]
 
 
   // add axis elements

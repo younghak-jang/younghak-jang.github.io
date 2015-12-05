@@ -44,7 +44,7 @@
 
 		<ul>
 			<li><a href="index.html">home</a></li>
-      <li><a href="Graphs.html">charts</a></li>
+      <li class="selected"><a href="Graphs.html">charts</a></li>
 			<li><a href="contact.html">contact</a></li>
 		</ul>
 	</div>
@@ -57,7 +57,7 @@
 					<h4>Grains</h4>
 
 					<ul>
-						<li><a onclick="clickCommodity(this)" target="main">Corn</a></li>
+						<li><a onclick="clickCommodity(this)" id='init' target="main">Corn</a></li>
 						<li><a onclick="clickCommodity(this)" target="main">Oats</a></li>
 						<li><a onclick="clickCommodity(this)" target="main">Soybeans</a></li>
 						<li><a onclick="clickCommodity(this)" target="main">Wheat</a></li>
@@ -158,8 +158,8 @@
 
 <script>
 ////////////////////////// global variables ////////////////////////
-var svg = d3.select('#tab1').append("svg").attr('id', 'voronoi');
-var width = 800;
+d3.select('#tab1').append("svg").attr('id', 'voronoi');
+//var width = 800;
 var parseDate = d3.time.format("%m/%d/%Y").parse,
     formatDate = d3.time.format("%b-%Y"),
     formatDate2 = d3.time.format("%x"),
@@ -169,7 +169,7 @@ var parseDate = d3.time.format("%m/%d/%Y").parse,
     formatCurrency = function(d) { return "$" + formatValue(d); };
 var header = 'contract,delivery_date,trade_date,open_price,high_price,low_price,close_price,volume,interest';
 var data = {'init':null};
-var plot_data, highlight_contract, isSingleClicked = false;
+var main_plot_data, highlight_contract, isSingleClicked = false;
 var commodity = 'corn'
 var main_trade_date = parseDate('01/01/1900')
 var main_delivery_date = parseDate('01/01/1900')
@@ -211,13 +211,13 @@ function clickCommodity(label) {
 	commodity = label.textContent.toLowerCase();
 	$(label).css({'color':'green', 'text-decoration': 'underline'});
 	selected_label = label;
-	$( "#tabs" ).tabs( "option", "active", 0 );
+	//$( "#tabs" ).tabs( "option", "active", 0 );
 	console.log(timestamp() + ': ' + commodity + ' is clicked.')
   refreshData();
 };
 
 function newPriceFunc() {
-  if (plot_data == null || plot_data.length == 0) {
+  if (main_plot_data == null || main_plot_data.length == 0) {
     console.warn('No data to plot!')
     return;
   }
@@ -242,14 +242,14 @@ $(function() {
       stepMonths: 1,
       onSelect: function (date) {
 // changed by MO            refreshData3(commodity, parse(date));
-          plot_OneDayChart(data[commodity], parseDate(date));
+          plot_OneDayChart(parseDate(date));
 // changed by MO
       }
     })
   });
 ////////////////////////// event handlers ////////////////////////
 ////////////////////////// load initial data ////////////////////////
-//refreshData();
+clickCommodity($('#init')[0]);
 ////////////////////////// load initial data ////////////////////////
 
 

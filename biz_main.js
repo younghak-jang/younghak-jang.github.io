@@ -60,26 +60,26 @@ function filterData(com_data) {
   console.log(timestamp() + ': start filtering');
   var startDate = $('#dateSlider').dateRangeSlider('min');
   var endDate = $('#dateSlider').dateRangeSlider('max');
-  plot_data = com_data.filter(function(d) {
+  main_plot_data = com_data.filter(function(d) {
     return d.trade_date >= startDate && d.trade_date <= endDate;
   });
-  if (plot_data.length == 0) {
+  if (main_plot_data.length == 0) {
     alert('No data found in the selected range!');
     //return;
   }
-  console.log(timestamp() + ': find ' + plot_data.length + ' rows after filtering');
-  refreshChart();
-  //refreshChart2();
+  console.log(timestamp() + ': find ' + main_plot_data.length + ' rows after filtering');
+  refreshChart(main_plot_data);
+  refreshChart2();
   refreshChart3()
 }
 
 // refresh main chart for the new context
 function refreshChart() {
-  if (plot_data.length == 0) {
-    console.log(':plot_data is empty')
+  if (main_plot_data.length == 0) {
+    console.log(':main_plot_data is empty')
     return;
   }
-  plot_voronoi(plot_data, $('#price').val());
+  plot_voronoi($('#price').val());
 }
 
 // refresh contract chart for the new context
@@ -88,7 +88,7 @@ function refreshChart2() {
     console.log(':data[commodity] is empty')
     return;
   }
-  plot_IndContractChart(data[commodity], main_delivery_date)
+  plot_IndContractChart()
 }
 
 // refresh one-day chart for the new context
@@ -97,5 +97,5 @@ function refreshChart3() {
     console.log(':data[commodity] is empty')
     return;
   }
-  plot_OneDayChart(data[commodity], main_trade_date)
+  plot_OneDayChart(main_trade_date)
 }

@@ -1,6 +1,6 @@
 
 
-function plot_voronoi(csv_data, price) {
+function plot_voronoi(price) {
 
   console.log(timestamp() + ': start plotting ...');
   $("body").css("cursor", "progress");
@@ -66,7 +66,7 @@ function plot_voronoi(csv_data, price) {
                 $('#tab3').select('p').text('One-day chart of ' + commodity + ', ' + highlight_contract + ' will show up here.' )
                 $( "#tabs" ).tabs( "option", "active", 2 );
               } else {
-                plot_IndContractChart(data[commodity]);
+                plot_IndContractChart();
                 $( "#tabs" ).tabs( "option", "active", 1 );
               }
           }
@@ -79,7 +79,7 @@ function plot_voronoi(csv_data, price) {
 
   // bind data
   console.log(timestamp() + ': start converting data ...');
-  cities = converter(csv_data, price);
+  cities = converter(main_plot_data, price);
   console.log(timestamp() + ': finish converting data ...');
 
   // get days

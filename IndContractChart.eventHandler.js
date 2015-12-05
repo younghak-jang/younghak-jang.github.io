@@ -4,7 +4,7 @@ function newContractFunc() {
     if (selectBox.selectedIndex < 0) return;
     var selectedValue = selectBox.options[selectBox.selectedIndex].value;
 
-    contract_data = corn.filter(function(d) { return d.delivery_date == selectedValue });
+    contract_data = data[commodity].filter(function(d) { return d.delivery_date == selectedValue });
     num_contracts = d3.set(contract_data.map(function(d) { return d.trade_date; })).values().length
     center_adj = width/2/num_contracts
 
@@ -20,19 +20,19 @@ function newContractFunc() {
 
     prices.forEach(function(p) {
       p.values = contract_data.map(function(d) {
-        return {date: d.trade_date, price: +d[p.name]};
+        return {date: d.trade_date, price: d[p.name]};
       })
     });
 
     volumes.forEach(function(v) {
       v.values = contract_data.map(function(d) {
-        return {date: d.trade_date, volume: +d[v.name]};
+        return {date: d.trade_date, volume: d[v.name]};
       })
     });
 
     interests.forEach(function(i) {
       i.values = contract_data.map(function(d) {
-        return {date: d.trade_date, interest: +d[i.name]};
+        return {date: d.trade_date, interest: d[i.name]};
       })
     });
 
