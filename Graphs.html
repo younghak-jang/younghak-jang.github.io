@@ -22,7 +22,6 @@
 <script src="IndContractChart.js"></script>
 <script src="IndContractChart.eventHandler.js"></script>
 <script src="IndContractChart.d3.legend.js"></script>
-<!--<script src="biz_main_IndContractChart.js"></script>-->
 
 <script src="OneDayChart.js"></script>
 
@@ -57,8 +56,8 @@
 					<h4>Grains</h4>
 
 					<ul>
-						<li><a onclick="clickCommodity(this)" id='init' target="main">Corn</a></li>
-						<li><a onclick="clickCommodity(this)" target="main">Oats</a></li>
+						<li><a onclick="clickCommodity(this)" id='initCorn' target="main">Corn</a></li>
+						<li><a onclick="clickCommodity(this)" id='initOats' target="main">Oats</a></li>
 						<li><a onclick="clickCommodity(this)" target="main">Soybeans</a></li>
 						<li><a onclick="clickCommodity(this)" target="main">Wheat</a></li>
 					</ul>
@@ -110,13 +109,14 @@
 				<!-- commodity chart viz elements -->
 				<div id="tab1">
 					<div id="dateSlider"></div>
-					<label for="price">Select a price: </label>
-					<select id="price" onchange = "newPriceFunc()">
+					Select a price: <select id="price" onchange = "newPriceFunc()">
 			  		<option value="close">Close</option>
 			  		<option value="open">Open</option>
 			  		<option value="high">High</option>
 			  		<option value="low">Low</option>
-					</select>
+					</select><br>
+					<label hidden> Search a contract: </label>
+					<input hidden type="text" id="searchContract" value="Press Enter when done"><br>
 				</div>
 
 				<!-- contract chart viz elements -->
@@ -168,13 +168,14 @@ var parseDate = d3.time.format("%m/%d/%Y").parse,
     formatValue = d3.format(",.2f"),
     formatCurrency = function(d) { return "$" + formatValue(d); };
 var header = 'contract,delivery_date,trade_date,open_price,high_price,low_price,close_price,volume,interest';
-var data = {'init':null};
-var main_plot_data; //isSingleClicked = false;
-var commodity = 'corn'
-var one_day_date = null;
-var contract_date = null;
-var highlight_line, selected_label;
-var DELAY = 330, clicks = 0, timer = null;
+var data = {'init':null}; // needed for caching raw data, skip reload if user comes back a previously checked commodity
+var main_plot_data; // needed for price switch, skip search and just change charting variable
+var commodity; // needed to retrieve currently selected commodity at various places.
+var one_day_date = null; // track mouse hover day on contract chart, makes double click easier
+var contract_date = null; // track mouse hover contract on main chart, makes double click easier
+var highlight_line, selected_label; // track highlighted contract, makes locking contract easier
+var DELAY = 330, clicks = 0, timer = null; // needed for handle single/double clicks
+var isContractLocked = false; // needed for retrieving various main chart state
 var width = 750;
 // file names: hard coded file name, seems javascript access of FS is tricky
 var fileName = {'canola':'canola_sorted_1980-2017.csv',
@@ -216,7 +217,7 @@ var monthCode = {'F':'January',
 $("#dateSlider").bind("userValuesChanged", function(){
   console.log(timestamp() + ': new range - ' + $("#dateSlider").dateRangeSlider('min')
     + ', ' + $("#dateSlider").dateRangeSlider('max'));
-  refreshData();
+  filterData(data[commodity]);
 });
 
 function clickCommodity(label) {
@@ -224,6 +225,7 @@ function clickCommodity(label) {
 	commodity = label.textContent.toLowerCase();
 	$(label).css({'color':'green', 'text-decoration': 'underline'});
 	selected_label = label;
+	$('#searchContract').val('Press Enter when done.');
 	//$( "#tabs" ).tabs( "option", "active", 0 );
 	console.log(timestamp() + ': ' + commodity + ' is clicked.')
   refreshData();
@@ -259,10 +261,15 @@ $(function() {
       }
     })
   });
+
+$('#searchContract').keypress(function(e) {
+  if(e.which != 13) return;
+	searchContract($('#searchContract').val().toUpperCase());
+});
 ////////////////////////// event handlers ////////////////////////
 
 ////////////////////////// load initial data ////////////////////////
-clickCommodity($('#init')[0]);
+clickCommodity($('#initCorn')[0]);
 ////////////////////////// load initial data ////////////////////////
 
 

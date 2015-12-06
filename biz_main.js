@@ -40,9 +40,12 @@ function refreshData() {
       var end = d3.max(temp, function(d) {return d.trade_date;});
       var interval = (end - start)/3600000/24/20; //days
       $("#dateSlider").dateRangeSlider('option', 'bounds', { min: start, max: end });
-      $('#dateSlider').dateRangeSlider('min', start);
+  		$('#dateSlider').dateRangeSlider('min', start);
       start.setDate(start.getDate() + interval);
       $('#dateSlider').dateRangeSlider('max', start);
+      console.log(timestamp() + ': initial range - ' + $("#dateSlider").dateRangeSlider('min')
+        + ', ' + $("#dateSlider").dateRangeSlider('max'));
+
       // cache data
       data[commodity] = temp;
       console.log(timestamp() + ': data load completed for ' + commodity + ' with ' + temp.length + ' rows.');
@@ -51,7 +54,16 @@ function refreshData() {
 
     });
   } else {
-    filterData(data[commodity]);
+    // reset slider
+    var temp = data[commodity];
+    var start = d3.min(temp, function(d) {return d.trade_date;});
+    var end = d3.max(temp, function(d) {return d.trade_date;});
+    var interval = (end - start)/3600000/24/20; //days
+    $("#dateSlider").dateRangeSlider('option', 'bounds', { min: start, max: end });
+    $('#dateSlider').dateRangeSlider('min', start);
+    start.setDate(start.getDate() + interval);
+    $('#dateSlider').dateRangeSlider('max', start);
+    filterData(temp);
   }
 }
 
@@ -98,4 +110,36 @@ function refreshChart3() {
     return;
   }
   plot_OneDayChart()
+}
+
+// contract search
+function searchContract(name) {
+  if (data[commodity] == null) {
+    alert('Please select a commodity first!');
+    return;
+  }
+  console.log(timestamp() + ': search ' + name);
+  var cData = data[commodity].filter(function(d) { return d.contract == name; })
+  if (cData.length == 0) {
+    alert("Contract '" + name + "' not found for " + commodity);
+    return;
+  }
+  // update data on main chart and refresh
+  var start = d3.min(cData, function(d) { return d.trade_date; });
+  var end = d3.max(cData, function(d) { return d.trade_date; });
+  main_plot_data = data[commodity].filter(function(d) { return d.trade_date>=start && d.trade_date<=end; });
+  // set slider
+  var toRight = start > $('#dateSlider').dateRangeSlider('min');
+  if (toRight) {
+    $('#dateSlider').dateRangeSlider('max', end);
+    $('#dateSlider').dateRangeSlider('min', start);
+  } else {
+    $('#dateSlider').dateRangeSlider('min', start);
+    $('#dateSlider').dateRangeSlider('max', end);
+  }
+  plot_voronoi($('#price').val()); // this call always set isContractLocked to false (no highlight)
+  // highlight the selected contract
+  isContractLocked = true;
+  highlight_line = cities.filter(function(d) { return d.name == name; })[0].values[0];
+  d3.select(highlight_line.city.line).classed("city--hover", true);
 }

@@ -5,10 +5,10 @@ function plot_voronoi(price) {
   console.log(timestamp() + ': start plotting ...');
   $("body").css("cursor", "progress");
   var highlight_contract,
-      dayFormat = d3.time.format("%m/%d/%Y").parse,
-  isSingleClicked = false;
+      dayFormat = d3.time.format("%m/%d/%Y").parse;
+  isContractLocked = false;
 
- var margin = {top: 20, right: 30, bottom: 30, left: 40},
+  var margin = {top: 20, right: 30, bottom: 30, left: 40},
   	width = 960 - margin.left - margin.right,
   	height = 500 - margin.top - margin.bottom;
 
@@ -42,13 +42,13 @@ function plot_voronoi(price) {
           if(clicks === 1) {
 
               timer = setTimeout(function() {
-                  isSingleClicked = !isSingleClicked;
-                  console.log(highlight_contract + ' is locked: ' + isSingleClicked); //perform single-click action
+                  isContractLocked = !isContractLocked;
+                  console.log(highlight_contract + ' is locked: ' + isContractLocked); //perform single-click action
 
                   clicks = 0;  //after action performed, reset counter
 
                   // unhighlight line if it's unlocked
-                  if (!isSingleClicked && highlight_line != null) {
+                  if (!isContractLocked && highlight_line != null) {
                     d3.select(highlight_line.city.line).classed("city--hover", false);
                     focus.attr("transform", "translate(-100,-100)");
                   }
@@ -134,11 +134,11 @@ function plot_voronoi(price) {
       .datum(function(d) { return d.point; })
       .on("mouseover", mouseover)
       .on("mouseout", mouseout);
-  console.log(timestamp() + ': finish building voronoi mesh ...');
+  console.log(timestamp() + ': finish building voronoi mesh');
 
   var bisectData = d3.bisector(function(d) { return d.date; }).left;
   function mouseover(d) {
-    if (!isSingleClicked) {
+    if (!isContractLocked) {
       // contract highlight model
       highlight_line = d;
       highlight_contract = d.city.name;
@@ -185,14 +185,14 @@ function plot_voronoi(price) {
   }
 
   function mouseout(d) {
-    if (!isSingleClicked) {
+    if (!isContractLocked) {
       d3.select(d.city.line).classed("city--hover", false);
       highlight_contract = "";
       focus.attr("transform", "translate(-100,-100)");
     }
   }
   $("body").css("cursor", "default");
-  console.log(timestamp() + ': finish plotting ...');
+  console.log(timestamp() + ': finish plotting main chart');
 }
 
 function converter(csvData, field) {
