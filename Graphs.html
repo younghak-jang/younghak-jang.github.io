@@ -115,8 +115,8 @@
 			  		<option value="high">High</option>
 			  		<option value="low">Low</option>
 					</select><br>
-					<label hidden> Search a contract: </label>
-					<input hidden type="text" id="searchContract" value="Press Enter when done"><br>
+					<label> Search a contract: </label>
+					<input type="text" id="searchContract" value="Press Enter when done."><br>
 				</div>
 
 				<!-- contract chart viz elements -->
@@ -159,7 +159,7 @@
 <script>
 ////////////////////////// global variables ////////////////////////
 d3.select('#tab1').append("svg").attr('id', 'voronoi');
-//var width = 800;
+//var width = 800; // below set to 750 will overwrite this
 var parseDate = d3.time.format("%m/%d/%Y").parse,
     formatDate = d3.time.format("%b-%Y"),
     formatDate2 = d3.time.format("%x"),
@@ -198,18 +198,9 @@ var fileName = {'canola':'canola_sorted_1980-2017.csv',
 				'fedder cattle':'feeder_cattle_sorted_1974-2016.csv',
 				'live hogs':'lean_hogs_sorted_1970-2016.csv'};
 
-var monthCode = {'F':'January',
-'G':'February',
-'H':'March',
-'J':'April',
-'K':'May',
-'M':'June',
-'N':'July',
-'Q':'August',
-'U':'September',
-'V':'October',
-'X':'November',
-'Z':'December'}
+var monthCode = {'F':'January', 'G':'February', 'H':'March', 'J':'April',
+	'K':'May', 'M':'June', 'N':'July', 'Q':'August', 'U':'September',
+	'V':'October', 'X':'November', 'Z':'December'}
 
 ////////////////////////// global variables ////////////////////////
 
@@ -264,7 +255,7 @@ $(function() {
 
 $('#searchContract').keypress(function(e) {
   if(e.which != 13) return;
-	searchContract($('#searchContract').val().toUpperCase());
+	searchContract($('#searchContract').val().trim().toUpperCase());
 });
 ////////////////////////// event handlers ////////////////////////
 
