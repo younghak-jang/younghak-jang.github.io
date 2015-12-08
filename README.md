@@ -1,7 +1,6 @@
-# MIDS W209 Final Project
-## Commodity Price - A Visualization Approach
+# Commodity Price - A Visualization Approach
+## MIDS W209 Final Project - Fall 2015
 ### Younghak Jang | Marguerite Oneto | James Route | Lei Yang
-### Fall 2015
 
 1. Project Concept
 Trading commodities — oil, coffee, gold, corn, wheat — is complex. Such products are
